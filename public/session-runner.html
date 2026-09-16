@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학습 콘텐츠 실행기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #090d16;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .loading-card {
+      text-align: center;
+      background: #111827;
+      border: 1px solid #1f2937;
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #1e293b;
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+      color: #f8fafc;
+      font-weight: 700;
+    }
+    p {
+      margin: 0 0 1.5rem;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      background: #0284c7;
+      color: #ffffff;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .action-btn:hover {
+      background: #0369a1;
+    }
+    .secondary-btn {
+      display: inline-block;
+      margin-top: 0.75rem;
+      color: #64748b;
+      text-decoration: underline;
+      font-size: 0.8rem;
+    }
+    .secondary-btn:hover {
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-card" id="status-card">
+    <div class="spinner" id="spinner"></div>
+    <h2 id="status-title">교사 업로드 학습 콘텐츠 로딩 중...</h2>
+    <p id="status-desc">잠시만 기다려주세요. 업로드된 차시별 웹앱 콘텐츠를 불러오고 있습니다.</p>
+    <div id="action-area" style="display: none;"></div>
+  </div>
+
+  <script>
+    (function () {
+      var DB_NAME = 'AILiteracy_HTML_Storage';
+      var DB_VERSION = 1;
+      var STORE_NAME = 'html_files';
+      var STORAGE_PREFIX = 'ai_literacy_uploaded_html_';
+
+      // Parse sessionId from query params (e.g. ?session=3)
+      var params = new URLSearchParams(window.location.search);
+      var sessionId = parseInt(params.get('session') || '3', 10);
+
+      function renderHtml(htmlContent) {
+        try {
+          document.open('text/html', 'replace');
+          document.write(htmlContent);
+          document.close();
+        } catch (e) {
+          console.error('Failed to write HTML to document:', e);
+          showError('HTML을 렌더링하는 중 오류가 발생했습니다.');
+        }
+      }
+
+      function showError(message) {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('status-title').textContent = '콘텐츠를 불러올 수 없습니다';
+        document.getElementById('status-desc').textContent = message || '업로드된 파일이 없거나 브라우저 저장소 접근이 제한되어 있습니다.';
+        
+        var actionArea = document.getElementById('action-area');
+        actionArea.style.display = 'block';
+
+        if (sessionId === 3) {
+          actionArea.innerHTML = '<a href="./truth-explorer.html" class="action-btn">기본 진실 탐사대 실행하기</a><br><a href="./" class="secondary-btn">← 학습 포털 홈으로 돌아가기</a>';
+        } else {
+          actionArea.innerHTML = '<a href="./" class="action-btn">← 학습 포털 홈으로 돌아가기</a>';
+        }
+      }
+
+      // 1. Try to fetch from IndexedDB
+      function fetchFromIndexedDB() {
+        return new Promise(function (resolve, reject) {
+          if (!window.indexedDB) {
+            reject(new Error('IndexedDB not supported'));
+            return;
+          }
+          var req = window.indexedDB.open(DB_NAME, DB_VERSION);
+          req.onsuccess = function () {
+            try {
+              var db = req.result;
+              if (!db.objectStoreNames.contains(STORE_NAME)) {
+                resolve(null);
+                return;
+              }
+              var tx = db.transaction(STORE_NAME, 'readonly');
+              var store = tx.objectStore(STORE_NAME);
+              var getReq = store.get(sessionId);
+              getReq.onsuccess = function () {
+                if (getReq.result && typeof getReq.result.content === 'string') {
+                  resolve(getReq.result.content);
+                } else {
+                  resolve(null);
+                }
+              };
+              getReq.onerror = function () {
+                resolve(null);
+              };
+            } catch (err) {
+              resolve(null);
+            }
+          };
+          req.onerror = function () {
+            resolve(null);
+          };
+        });
+      }
+
+      // 2. Fetch from LocalStorage fallback
+      function fetchFromLocalStorage() {
+        try {
+          return localStorage.getItem(STORAGE_PREFIX + sessionId);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      // Execute loading
+      fetchFromIndexedDB().then(function (content) {
+        if (content && content.trim().length > 0) {
+          renderHtml(content);
+          return;
+        }
+
+        var lsContent = fetchFromLocalStorage();
+        if (lsContent && lsContent.trim().length > 0) {
+          renderHtml(lsContent);
+          return;
+        }
+
+        // If no custom upload found, fallback to default if session 3
+        if (sessionId === 3) {
+          window.location.replace('./truth-explorer.html');
+        } else {
+          showError('이 차시에 업로드된 맞춤 HTML 파일이 없습니다.');
+        }
+      }).catch(function () {
+        var lsContent = fetchFromLocalStorage();
+        if (lsContent && lsContent.trim().length > 0) {
+          renderHtml(lsContent);
+        } else if (sessionId === 3) {
+          window.location.replace('./truth-explorer.html');
+        } else {
+          showError('콘텐츠 로딩 중 오류가 발생했습니다.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

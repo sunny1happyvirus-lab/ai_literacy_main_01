@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>디지털윤리 4대 미션 — 진실 탐사대</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080b17;
+  --bg-panel:#111a33;
+  --bg-panel-2:#0d1428;
+  --line:rgba(150,168,255,0.16);
+  --ink:#edf1ff;
+  --ink-dim:#8e9ac2;
+  --teal:#45d9b8;
+  --teal-dim:rgba(69,217,184,0.16);
+  --amber:#f2a65a;
+  --amber-dim:rgba(242,166,90,0.16);
+  --violet:#b48cf2;
+  --violet-dim:rgba(180,140,242,0.16);
+  --rose:#f0708a;
+  --rose-dim:rgba(240,112,138,0.16);
+  --gold:#f5c56b;
+  --good:#59d97e;
+  --bad:#f0637a;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--ink);
+  font-family:'Noto Sans KR',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;}
+.num{font-family:'Space Grotesk','Noto Sans KR',sans-serif;}
+#app{position:relative;width:100vw;height:100vh;height:100dvh;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;}
+.screen.active{display:block;}
+
+/* ---------- 인트로 ---------- */
+#intro-screen.active{display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 20%, #16224a 0%, #080b17 70%);}
+.intro-card{max-width:560px;width:92%;text-align:center;padding:40px 32px;}
+.intro-eyebrow{font-size:13px;letter-spacing:0.06em;color:var(--teal);margin-bottom:14px;font-weight:500;}
+.intro-title{font-size:clamp(28px,5vw,42px);font-weight:900;line-height:1.35;margin:0 0 18px;}
+.intro-title em{font-style:normal;color:var(--teal);}
+.intro-desc{color:var(--ink-dim);font-size:15px;line-height:1.7;margin:0 0 30px;}
+.stage-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:34px;}
+.chip{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:100px;
+  border:1px solid var(--line);font-size:13px;color:var(--ink-dim);background:rgba(255,255,255,0.02);}
+.chip .dot{width:8px;height:8px;border-radius:50%;}
+.name-row{display:flex;gap:10px;justify-content:center;margin-bottom:26px;flex-wrap:wrap;}
+.name-row input{background:var(--bg-panel);border:1px solid var(--line);color:var(--ink);
+  padding:12px 16px;border-radius:10px;font-size:15px;font-family:inherit;width:220px;outline:none;}
+.name-row input:focus{border-color:var(--teal);}
+.avatar-select-label{font-size:13px;color:var(--ink-dim);margin-bottom:10px;letter-spacing:0.02em;}
+.avatar-select-row{display:flex;gap:14px;justify-content:center;margin-bottom:22px;flex-wrap:wrap;}
+.avatar-option{appearance:none;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;
+  gap:8px;width:130px;padding:16px 10px 14px;border-radius:14px;background:var(--bg-panel);
+  border:2px solid var(--line);transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;}
+.avatar-option:hover{transform:translateY(-2px);border-color:var(--ink-dim);}
+.avatar-option:active{transform:scale(0.97);}
+.avatar-preview{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:30px;background:var(--bg-panel-2);border:1px solid var(--line);}
+.avatar-option-label{font-size:13px;font-weight:700;color:var(--ink-dim);}
+.avatar-option[data-gender="boy"].selected{border-color:var(--teal);box-shadow:0 8px 20px rgba(69,217,184,0.25);}
+.avatar-option[data-gender="boy"].selected .avatar-preview{border-color:var(--teal);background:var(--teal-dim);}
+.avatar-option[data-gender="boy"].selected .avatar-option-label{color:var(--teal);}
+.avatar-option[data-gender="girl"].selected{border-color:var(--rose);box-shadow:0 8px 20px rgba(240,112,138,0.25);}
+.avatar-option[data-gender="girl"].selected .avatar-preview{border-color:var(--rose);background:var(--rose-dim);}
+.avatar-option[data-gender="girl"].selected .avatar-option-label{color:var(--rose);}
+.btn{appearance:none;border:none;cursor:pointer;font-family:inherit;font-weight:700;
+  font-size:15px;padding:14px 30px;border-radius:12px;transition:transform .15s ease, box-shadow .15s ease;}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:linear-gradient(135deg,var(--teal),#2fb89a);color:#052a22;
+  box-shadow:0 8px 24px rgba(69,217,184,0.25);}
+.btn-primary:hover{box-shadow:0 10px 30px rgba(69,217,184,0.4);}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink);}
+.btn-ghost:hover{border-color:var(--ink-dim);}
+.btn-sm{padding:9px 16px;font-size:13px;border-radius:9px;}
+
+/* ---------- 허브(3D) ---------- */
+#hub-screen.active{display:block;}
+#three-canvas{position:absolute;inset:0;display:block;touch-action:none;cursor:grab;}
+#three-canvas:active{cursor:grabbing;}
+.hud-top{position:absolute;top:0;left:0;right:0;display:flex;flex-direction:column;gap:10px;
+  padding:18px 20px;pointer-events:none;z-index:5;}
+.hud-top-row{display:flex;justify-content:space-between;align-items:flex-start;}
+.hud-brand{display:flex;flex-direction:column;gap:2px;pointer-events:auto;}
+.hud-brand .t1{font-size:11px;letter-spacing:.08em;color:var(--teal);font-weight:500;}
+.hud-brand .t2{font-size:17px;font-weight:900;}
+.hud-score{pointer-events:auto;display:flex;align-items:center;gap:14px;
+  background:rgba(13,20,40,0.72);backdrop-filter:blur(10px);border:1px solid var(--line);
+  border-radius:14px;padding:10px 16px;}
+.hud-score .label{font-size:11px;color:var(--ink-dim);}
+.hud-score .val{font-size:20px;font-weight:700;color:var(--gold);}
+.badge-row{display:flex;gap:6px;}
+.badge-dot{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;border:1px solid var(--line);background:rgba(255,255,255,0.03);color:var(--ink-dim);position:relative;}
+.badge-dot.done{background:var(--stage-color,var(--teal-dim));border-color:var(--stage-color,var(--teal));color:var(--ink);}
+.badge-dot.done::after{content:'✓';position:absolute;top:-5px;right:-5px;width:13px;height:13px;
+  border-radius:50%;background:var(--good);color:#08111f;font-size:9px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--bg);}
+
+.hud-stagebar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;pointer-events:auto;}
+.stagebar-chip{cursor:pointer;display:flex;align-items:center;gap:6px;
+  background:rgba(13,20,40,0.72);backdrop-filter:blur(10px);border:1px solid var(--line);
+  border-radius:100px;padding:7px 14px;font-size:12px;color:var(--ink-dim);transition:.15s;font-weight:500;}
+.stagebar-chip:hover{border-color:var(--ink-dim);transform:translateY(-1px);}
+.stagebar-chip.done{border-color:var(--stage-color);background:var(--stage-dim,rgba(255,255,255,0.05));color:var(--ink);font-weight:700;}
+.stagebar-chip .ck{font-size:13px;display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;background:var(--good);color:#08111f;font-weight:900;font-size:10px;}
+
+.hub-label{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .2s;}
+.hub-label .pin{width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 16px currentColor;}
+.hub-label .card{pointer-events:auto;cursor:pointer;background:rgba(13,20,40,0.82);backdrop-filter:blur(8px);
+  border:1px solid var(--line);border-radius:12px;padding:8px 14px;text-align:center;min-width:118px;
+  transition:transform .15s ease, border-color .15s ease;position:relative;}
+.hub-label .card:hover{transform:translateY(-3px);}
+.hub-label .num{font-size:10px;color:var(--ink-dim);letter-spacing:.05em;}
+.hub-label .name{font-size:13px;font-weight:700;margin-top:2px;}
+.hub-label .stat{font-size:11px;margin-top:4px;color:var(--ink-dim);}
+.hub-label.done .card{border-color:var(--stage-color);background:rgba(255,255,255,0.04);}
+.hub-label.done .stat{color:var(--stage-color);font-weight:700;}
+.hub-label.done .card::before{content:'✓ 완료';position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--good);color:#08111f;font-size:9.5px;font-weight:900;padding:2px 9px;border-radius:100px;
+  letter-spacing:.02em;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
+.hub-label.report{opacity:0;pointer-events:none;}
+.hub-label.report.unlocked{opacity:1;pointer-events:auto;}
+.hub-label.avatar-name-label{z-index:3;pointer-events:none;}
+.hub-label.avatar-name-label .card{padding:6px 12px;cursor:default;pointer-events:none;}
+.hub-label.avatar-name-label .name{margin-top:0;font-size:12px;}
+
+.hud-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center;
+  padding:18px;pointer-events:none;z-index:5;}
+.hint-pill{pointer-events:auto;background:rgba(13,20,40,0.72);backdrop-filter:blur(10px);
+  border:1px solid var(--line);border-radius:100px;padding:10px 18px;font-size:12.5px;color:var(--ink-dim);
+  display:flex;align-items:center;gap:8px;}
+
+/* ---------- 미션 모달 ---------- */
+#mission-modal{position:absolute;inset:0;z-index:20;background:rgba(6,9,20,0.7);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:16px;}
+#mission-modal.active{display:flex;}
+.mission-card{width:min(880px,100%);max-height:92vh;overflow-y:auto;background:var(--bg-panel);
+  border:1px solid var(--line);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,0.5);}
+.mission-head{position:sticky;top:0;background:var(--bg-panel);z-index:2;
+  border-bottom:1px solid var(--line);padding:20px 26px;display:flex;align-items:center;gap:14px;}
+.mission-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;background:var(--stage-dim);flex-shrink:0;}
+.mission-headtext{flex:1;min-width:0;}
+.mission-headtext .eyebrow{font-size:11px;color:var(--stage-color);letter-spacing:.05em;font-weight:500;}
+.mission-headtext .title{font-size:18px;font-weight:900;margin-top:2px;}
+.mission-progress{display:flex;gap:5px;flex-shrink:0;}
+.mission-progress .seg{width:20px;height:5px;border-radius:3px;background:rgba(255,255,255,0.12);}
+.mission-progress .seg.past{background:var(--stage-color);}
+.mission-progress .seg.now{background:var(--ink);}
+.mission-close{background:none;border:none;color:var(--ink-dim);font-size:22px;cursor:pointer;
+  padding:4px 8px;border-radius:8px;line-height:1;}
+.mission-close:hover{color:var(--ink);background:rgba(255,255,255,0.06);}
+.mission-body{padding:24px 26px 30px;}
+
+.story-box{font-size:14px;color:var(--ink-dim);line-height:1.7;margin-bottom:18px;
+  border-left:3px solid var(--stage-color);padding:2px 0 2px 14px;}
+
+.context-card{background:var(--bg-panel-2);border:1px solid var(--line);border-radius:14px;
+  padding:18px 20px;margin-bottom:20px;}
+.context-card .headline{font-size:16px;font-weight:700;line-height:1.5;margin-bottom:8px;}
+.context-card .meta{font-size:12.5px;color:var(--ink-dim);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.context-card .meta span{display:flex;align-items:center;gap:5px;}
+.context-card .body{font-size:14px;color:var(--ink);line-height:1.75;white-space:pre-line;
+  background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;margin-top:6px;}
+.context-card .datarow{display:flex;justify-content:space-between;font-size:13.5px;padding:7px 0;
+  border-bottom:1px dashed var(--line);}
+.context-card .datarow:last-child{border-bottom:none;}
+.context-card .datarow b{color:var(--stage-color);}
+
+.clue-block{margin-bottom:20px;}
+.clue-block .lbl{font-size:12.5px;color:var(--ink-dim);margin-bottom:9px;font-weight:500;}
+.clue-btns{display:flex;flex-wrap:wrap;gap:8px;}
+.clue-btn{background:rgba(255,255,255,0.04);border:1px solid var(--line);color:var(--ink);
+  padding:9px 14px;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;}
+.clue-btn:hover{border-color:var(--stage-color);}
+.clue-btn.opened{background:var(--stage-dim);border-color:var(--stage-color);}
+.clue-reveal{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+.clue-note{font-size:13.5px;line-height:1.6;background:rgba(255,255,255,0.03);
+  border-left:2px solid var(--stage-color);padding:10px 12px;border-radius:0 8px 8px 0;color:var(--ink);}
+
+/* 핫스팟(딥페이크) */
+.hotspot-wrap{position:relative;width:100%;max-width:320px;margin:0 auto 20px;}
+.hotspot-wrap svg{width:100%;height:auto;display:block;border-radius:16px;background:#0a1226;}
+.hotspot-dot{cursor:pointer;}
+.hotspot-dot circle.ring{fill:rgba(255,255,255,0.06);stroke:rgba(255,255,255,0.4);stroke-width:1.5;
+  transition:.15s;}
+.hotspot-dot:hover circle.ring{stroke:var(--stage-color);fill:var(--stage-dim);}
+.hotspot-dot.checked circle.ring{stroke:var(--ink-dim);}
+.hotspot-dot.checked.anomaly circle.ring{stroke:var(--bad);fill:rgba(240,99,122,0.18);}
+.hotspot-dot text{fill:#fff;font-size:11px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
+
+.question-block .q{font-size:15px;font-weight:700;margin-bottom:13px;line-height:1.6;}
+.opt-list{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
+.opt{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border:1px solid var(--line);
+  border-radius:12px;cursor:pointer;font-size:14px;line-height:1.55;transition:.15s;background:rgba(255,255,255,0.02);}
+.opt:hover{border-color:var(--ink-dim);}
+.opt .mark{width:19px;height:19px;border-radius:6px;border:1.5px solid var(--ink-dim);flex-shrink:0;
+  margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.opt.radio .mark{border-radius:50%;}
+.opt.selected{border-color:var(--stage-color);background:var(--stage-dim);}
+.opt.selected .mark{border-color:var(--stage-color);background:var(--stage-color);color:#08111f;}
+.opt.correct{border-color:var(--good);background:rgba(89,217,126,0.12);}
+.opt.correct .mark{border-color:var(--good);background:var(--good);color:#08111f;}
+.opt.wrong{border-color:var(--bad);background:rgba(240,99,122,0.1);}
+.opt.wrong .mark{border-color:var(--bad);background:var(--bad);color:#08111f;}
+.opt.disabled{cursor:default;}
+
+.explain-box{display:none;font-size:13.5px;line-height:1.7;background:rgba(255,255,255,0.03);
+  border-radius:12px;padding:14px 16px;margin-bottom:18px;border:1px solid var(--line);}
+.explain-box.show{display:block;}
+.explain-box .tag{font-weight:700;font-size:12.5px;margin-bottom:6px;display:inline-block;
+  padding:3px 9px;border-radius:100px;}
+.explain-box.ok .tag{background:rgba(89,217,126,0.18);color:var(--good);}
+.explain-box.no .tag{background:rgba(240,99,122,0.18);color:var(--bad);}
+
+.mission-foot{display:flex;justify-content:flex-end;gap:10px;}
+
+/* ---------- 역할 전환 링크 ---------- */
+.role-switch{margin-top:20px;font-size:13px;color:var(--ink-dim);}
+.role-switch a{color:var(--teal);cursor:pointer;text-decoration:none;font-weight:700;}
+.role-switch a:hover{text-decoration:underline;}
+
+/* ---------- 교사 대시보드 ---------- */
+#teacher-login-screen.active, #teacher-dashboard-screen.active{display:flex;}
+#teacher-login-screen.active{align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 20%, #16224a 0%, #080b17 70%);}
+#teacher-dashboard-screen.active{display:block;overflow-y:auto;
+  background:radial-gradient(ellipse at 50% 0%, #16224a 0%, #080b17 65%);}
+.teacher-wrap{max-width:1040px;margin:0 auto;padding:40px 20px 60px;}
+.teacher-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  flex-wrap:wrap;margin-bottom:22px;}
+.teacher-head-actions{display:flex;gap:8px;}
+.teacher-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
+.teacher-toolbar input[type=text]{background:var(--bg-panel);border:1px solid var(--line);color:var(--ink);
+  padding:11px 14px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;flex:1;min-width:180px;}
+.teacher-toolbar input[type=text]:focus{border-color:var(--teal);}
+.teacher-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.teacher-summary .sc{background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;
+  padding:12px 18px;min-width:110px;}
+.teacher-summary .sc .n{font-size:22px;font-weight:900;font-family:'Space Grotesk',sans-serif;}
+.teacher-summary .sc .l{font-size:12px;color:var(--ink-dim);margin-top:2px;}
+.teacher-charts{background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;
+  padding:20px 22px;margin-bottom:20px;}
+.teacher-charts h3{margin:0 0 16px;font-size:14.5px;font-weight:900;}
+.tc-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.tc-row:last-child{margin-bottom:0;}
+.tc-label{width:96px;flex-shrink:0;font-size:12.5px;color:var(--ink-dim);display:flex;align-items:center;gap:6px;}
+.tc-track{flex:1;height:20px;border-radius:8px;background:rgba(255,255,255,0.06);overflow:hidden;position:relative;}
+.tc-fill{height:100%;border-radius:8px;transition:width .4s ease;}
+.tc-val{width:118px;flex-shrink:0;text-align:right;font-size:12.5px;color:var(--ink-dim);font-weight:700;}
+.tc-empty{color:var(--ink-dim);font-size:13px;padding:8px 0;}
+.tc-row-click{cursor:pointer;padding:6px 8px;margin:0 -8px 14px;border-radius:10px;transition:background .15s ease;}
+.tc-row-click:hover{background:rgba(255,255,255,0.05);}
+.tc-row-selected{background:rgba(69,217,184,0.1);outline:1px solid var(--teal);}
+.tc-val-wide{width:200px;}
+.td-qa-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px;}
+.td-qa-toolbar select{background:var(--bg-panel-2);border:1px solid var(--line);color:var(--ink);
+  padding:8px 12px;border-radius:8px;font-size:12.5px;font-family:inherit;outline:none;}
+.td-qa-toolbar select:focus{border-color:var(--teal);}
+.tc-qa-prompt{font-size:11.5px;color:var(--ink-dim);margin:-8px 0 16px 108px;line-height:1.5;}
+.tc-weak-note{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+  font-size:12.5px;line-height:1.7;color:var(--bad);font-weight:700;}
+.tc-weak-note-ok{color:var(--good);}
+.teacher-table-wrap{background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;
+  overflow:hidden;overflow-x:auto;}
+.teacher-table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px;}
+.teacher-table th{text-align:left;padding:12px 14px;color:var(--ink-dim);font-weight:700;
+  font-size:11.5px;letter-spacing:.03em;border-bottom:1px solid var(--line);white-space:nowrap;
+  background:var(--bg-panel-2);position:sticky;top:0;}
+.teacher-table td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.06);white-space:nowrap;}
+.teacher-table tbody tr:last-child td{border-bottom:none;}
+.teacher-table tbody tr{cursor:pointer;transition:background .12s;}
+.teacher-table tbody tr:hover{background:rgba(255,255,255,0.03);}
+.td-status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11.5px;font-weight:700;}
+.td-status.complete{background:rgba(89,217,126,0.16);color:var(--good);}
+.td-status.progress{background:rgba(242,166,90,0.16);color:var(--amber);}
+.teacher-empty{padding:40px 20px;text-align:center;color:var(--ink-dim);font-size:13.5px;line-height:1.7;}
+#teacher-detail-modal{position:absolute;inset:0;z-index:25;background:rgba(6,9,20,0.7);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:16px;}
+#teacher-detail-modal.active{display:flex;}
+.td-feedback-box{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;}
+.td-feedback-box h4{font-size:14px;font-weight:900;margin:0 0 10px;}
+.td-feedback-status{font-size:12.5px;color:var(--ink-dim);margin-bottom:10px;}
+.td-feedback-textarea{width:100%;min-height:120px;background:var(--bg-panel-2);border:1px solid var(--line);
+  border-radius:10px;color:var(--ink);padding:12px 14px;font-family:inherit;font-size:13.5px;
+  line-height:1.65;resize:vertical;outline:none;}
+.td-feedback-textarea:focus{border-color:var(--teal);}
+.td-feedback-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+
+/* ---------- 학생 - 교사 피드백 수신함 ---------- */
+#hud-feedback-btn.has-unread{border-color:var(--gold);color:var(--gold);animation:fbpulse 1.6s ease-in-out infinite;}
+@keyframes fbpulse{0%,100%{box-shadow:0 0 0 0 rgba(245,197,107,0.35);}50%{box-shadow:0 0 0 6px rgba(245,197,107,0);}}
+#feedback-modal{position:absolute;inset:0;z-index:26;background:rgba(6,9,20,0.7);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:16px;}
+#feedback-modal.active{display:flex;}
+.feedback-box{background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+.feedback-box .txt{font-size:14px;line-height:1.8;white-space:pre-line;}
+.feedback-box .meta{margin-top:12px;font-size:11.5px;color:var(--ink-dim);}
+.report-feedback-empty{color:var(--ink-dim);font-size:13.5px;line-height:1.7;}
+
+/* ---------- 공용 확인창 ---------- */
+#confirm-modal{position:absolute;inset:0;z-index:40;background:rgba(6,9,20,0.75);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:16px;}
+#confirm-modal.active{display:flex;}
+.confirm-card{width:min(380px,100%);background:var(--bg-panel);border:1px solid var(--line);
+  border-radius:18px;padding:26px 24px 22px;box-shadow:0 30px 80px rgba(0,0,0,0.5);text-align:center;}
+.confirm-msg{font-size:14.5px;line-height:1.7;color:var(--ink);margin-bottom:20px;white-space:pre-line;}
+.confirm-actions{display:flex;justify-content:center;gap:10px;}
+
+/* ---------- 교사 - 학급코드 생성/관리 ---------- */
+#classcode-modal{position:absolute;inset:0;z-index:27;background:rgba(6,9,20,0.7);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:16px;}
+#classcode-modal.active{display:flex;}
+.cc-desc{color:var(--ink-dim);font-size:13.5px;line-height:1.7;margin:0 0 16px;}
+.cc-bulk{background:rgba(245,197,107,0.08);border:1px solid rgba(245,197,107,0.3);border-radius:12px;
+  padding:14px 16px;margin-bottom:18px;}
+.cc-bulk-title{font-size:13.5px;font-weight:900;margin-bottom:10px;color:var(--gold);}
+.cc-bulk-form{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.cc-bulk-form input[type=text]{flex:1;min-width:110px;background:var(--bg-panel-2);border:1px solid var(--line);
+  color:var(--ink);padding:10px 12px;border-radius:9px;font-size:13.5px;font-family:inherit;outline:none;}
+.cc-bulk-form input[type=number]{width:56px;background:var(--bg-panel-2);border:1px solid var(--line);
+  color:var(--ink);padding:10px 8px;border-radius:9px;font-size:13.5px;font-family:inherit;outline:none;text-align:center;}
+.cc-bulk-form input:focus{border-color:var(--teal);}
+.cc-bulk-tilde{font-size:12.5px;color:var(--ink-dim);flex-shrink:0;}
+.cc-bulk-hint{font-size:11.5px;color:var(--ink-dim);line-height:1.6;margin:8px 0 0;}
+.cc-single-title{font-size:12.5px;font-weight:900;color:var(--ink-dim);margin-bottom:8px;letter-spacing:.02em;}
+.cc-form{display:flex;gap:8px;flex-wrap:wrap;}
+.cc-form input{flex:1;min-width:160px;background:var(--bg-panel-2);border:1px solid var(--line);color:var(--ink);
+  padding:11px 14px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;}
+.cc-form input:focus{border-color:var(--teal);}
+.cc-list{margin-top:18px;display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;}
+.cc-empty{color:var(--ink-dim);font-size:13.5px;line-height:1.7;text-align:center;padding:20px 0;}
+.cc-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);border-radius:12px;padding:12px 14px;flex-wrap:wrap;}
+.cc-item.cc-item-editing{border-color:var(--teal);background:rgba(69,217,184,0.06);}
+.cc-code{font-family:'Space Grotesk','Noto Sans KR',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.06em;color:var(--gold);}
+.cc-meta{font-size:12px;color:var(--ink-dim);margin-top:3px;}
+.cc-badge-inuse{color:var(--good);font-weight:700;}
+.cc-badge-unused{color:var(--ink-dim);}
+.cc-actions{display:flex;gap:6px;flex-shrink:0;}
+.cc-edit-input{width:100%;background:var(--bg-panel-2);border:1px solid var(--teal);color:var(--ink);
+  padding:9px 12px;border-radius:8px;font-size:13.5px;font-family:inherit;outline:none;margin-top:2px;}
+
+.td-detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);font-size:13.5px;}
+.td-detail-row:last-child{border-bottom:none;}
+.td-detail-journal{background:rgba(255,255,255,0.03);border-radius:10px;padding:12px 14px;
+  font-size:13px;line-height:1.7;color:var(--ink-dim);margin-top:8px;}
+.td-detail-journal b{color:var(--ink);}
+
+/* ---------- 교사 - 문항별 정답/오답 분석 ---------- */
+.td-qa-details{margin:-2px 0 6px;}
+.td-qa-details summary{cursor:pointer;font-size:12.5px;color:var(--teal);font-weight:700;
+  padding:6px 0;list-style:none;user-select:none;}
+.td-qa-details summary::-webkit-details-marker{display:none;}
+.td-qa-details summary::before{content:'▸ ';}
+.td-qa-details[open] summary::before{content:'▾ ';}
+.td-qa-list{display:flex;flex-direction:column;gap:8px;padding:4px 0 10px;}
+.td-qa-item{background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;border-left:3px solid var(--line);}
+.td-qa-item.ok{border-left-color:var(--good);}
+.td-qa-item.no{border-left-color:var(--bad);}
+.td-qa-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+  font-size:12.5px;line-height:1.55;margin-bottom:6px;}
+.td-qa-head>span:first-child{flex:1;color:var(--ink);}
+.td-qa-head>span:last-child{white-space:nowrap;font-size:11.5px;}
+.td-qa-row{display:flex;gap:6px;font-size:12px;line-height:1.6;color:var(--ink-dim);}
+.td-qa-label{flex-shrink:0;color:var(--ink-dim);opacity:.8;}
+.td-qa-wrong{color:var(--bad);font-weight:700;}
+.td-qa-right{color:var(--good);font-weight:700;}
+.td-qa-empty{color:var(--ink-dim);font-size:12px;padding:6px 0 10px;}
+.td-summary-analysis{margin-top:22px;border-top:1px solid var(--line);padding-top:16px;}
+.td-summary-analysis h4{font-size:14px;font-weight:900;margin:0 0 10px;}
+@media (max-width:560px){
+  .teacher-wrap{padding:26px 14px 40px;}
+}
+
+/* ---------- 결과 보고서 ---------- */
+#report-screen{background:radial-gradient(ellipse at 50% 0%, #16224a 0%, #080b17 65%);overflow-y:auto;}
+#report-screen.active{display:block;}
+.report-wrap{max-width:760px;margin:0 auto;padding:50px 20px 70px;}
+.report-hero{text-align:center;margin-bottom:34px;}
+.report-hero .ring{width:150px;height:150px;border-radius:50%;margin:0 auto 18px;position:relative;
+  display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--gold) calc(var(--pct)*1%), rgba(255,255,255,0.08) 0);}
+.report-hero .ring::before{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--bg);}
+.report-hero .ring .score{position:relative;font-size:34px;font-weight:900;font-family:'Space Grotesk',sans-serif;}
+.report-hero .ring .score small{display:block;font-size:11px;color:var(--ink-dim);font-family:'Noto Sans KR';font-weight:500;}
+.report-hero .ending{font-size:22px;font-weight:900;color:var(--gold);margin:4px 0 8px;}
+.report-hero .ending-desc{color:var(--ink-dim);font-size:14px;max-width:440px;margin:0 auto;line-height:1.7;}
+
+.report-badges{display:flex;justify-content:center;gap:10px;margin:26px 0 36px;flex-wrap:wrap;}
+.report-badge{display:flex;flex-direction:column;align-items:center;gap:7px;width:84px;}
+.report-badge .ic{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;border:1.5px solid var(--stage-color);background:var(--stage-dim);}
+.report-badge .nm{font-size:11.5px;text-align:center;color:var(--ink-dim);line-height:1.4;}
+.report-badge .pt{font-size:12px;font-weight:700;color:var(--stage-color);}
+
+.report-section{background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;
+  padding:22px 24px;margin-bottom:18px;}
+.report-section h3{margin:0 0 14px;font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px;}
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);font-size:13.5px;}
+.report-row:last-child{border-bottom:none;}
+.report-row .rname{display:flex;align-items:center;gap:9px;}
+.report-row .ric{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;}
+.report-row .rscore{font-weight:700;font-family:'Space Grotesk',sans-serif;}
+
+.journal-field{margin-bottom:16px;}
+.journal-field label{display:block;font-size:13px;color:var(--ink-dim);margin-bottom:8px;font-weight:500;}
+.journal-field select, .journal-field textarea{width:100%;background:var(--bg-panel-2);
+  border:1px solid var(--line);border-radius:11px;color:var(--ink);font-family:inherit;font-size:14px;
+  padding:12px 14px;outline:none;resize:vertical;}
+.journal-field textarea{min-height:82px;line-height:1.6;}
+.journal-submit-status{font-size:12.5px;margin:10px 0 12px;line-height:1.6;}
+.journal-status-ok{color:var(--good);}
+.journal-status-wait{color:var(--ink-dim);}
+.journal-field select:focus, .journal-field textarea:focus{border-color:var(--teal);}
+
+.report-actions{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap;}
+
+/* ---------- 완료 도장 & 수료증 ---------- */
+.stage-stamp{width:128px;height:128px;margin:6px auto 0;border-radius:50%;
+  border:4px solid var(--stage-color,var(--gold));display:flex;align-items:center;justify-content:center;
+  flex-direction:column;transform:rotate(-11deg);position:relative;opacity:0.94;}
+.stage-stamp::before{content:'';position:absolute;inset:7px;border:1.5px dashed var(--stage-color,var(--gold));border-radius:50%;}
+.stage-stamp .txt1{font-size:11px;letter-spacing:.16em;color:var(--stage-color,var(--gold));font-weight:900;font-family:'Space Grotesk',sans-serif;}
+.stage-stamp .txt2{font-size:21px;font-weight:900;color:var(--stage-color,var(--gold));margin-top:3px;}
+.stage-stamp .txt3{font-size:9px;letter-spacing:.12em;color:var(--stage-color,var(--gold));margin-top:3px;}
+
+.certificate{background:linear-gradient(135deg, rgba(245,197,107,0.09), rgba(255,255,255,0.02));
+  border:2px solid var(--gold);border-radius:18px;padding:36px 28px 30px;margin-bottom:26px;
+  text-align:center;position:relative;overflow:hidden;}
+.certificate::before{content:'';position:absolute;inset:8px;border:1.5px dashed rgba(245,197,107,0.5);
+  border-radius:12px;pointer-events:none;}
+.certificate .cert-eyebrow{font-size:11.5px;letter-spacing:.22em;color:var(--gold);font-weight:700;margin-bottom:12px;}
+.certificate .cert-title{font-size:27px;font-weight:900;letter-spacing:.15em;margin-bottom:18px;font-family:'Space Grotesk',sans-serif;}
+.certificate .cert-name{font-size:22px;font-weight:900;color:var(--gold);margin:4px 0 16px;}
+.certificate .cert-body{font-size:13.5px;color:var(--ink-dim);line-height:1.85;max-width:460px;margin:0 auto 20px;}
+.certificate .cert-meta{display:flex;justify-content:center;gap:28px;font-size:12px;color:var(--ink-dim);
+  border-top:1px solid rgba(245,197,107,0.3);padding-top:16px;margin-top:6px;flex-wrap:wrap;}
+.certificate .cert-meta b{color:var(--ink);display:block;font-size:14px;margin-top:4px;font-family:'Space Grotesk',sans-serif;}
+.certificate .cert-stamp{position:absolute;right:22px;bottom:18px;width:72px;height:72px;border:3px solid var(--gold);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  transform:rotate(-14deg);opacity:0.85;}
+.certificate .cert-stamp .a{font-size:8.5px;letter-spacing:.1em;color:var(--gold);font-weight:900;}
+.certificate .cert-stamp .b{font-size:14px;font-weight:900;color:var(--gold);}
+@media print{ .stage-stamp,.certificate .cert-stamp{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+
+@media (max-width:560px){
+  .mission-body{padding:18px 16px 24px;}
+  .mission-head{padding:16px 16px;}
+  .hud-score{padding:8px 12px;}
+  .report-wrap{padding:36px 14px 50px;}
+}
+@media print{
+  #hub-screen,#mission-modal,#intro-screen{display:none !important;}
+  .report-actions{display:none !important;}
+  body{background:#fff;color:#111;}
+  .report-section,.report-hero .ring{background:#fff;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ 인트로 ============ -->
+  <div id="intro-screen" class="screen active">
+    <div class="intro-card">
+      <div class="intro-eyebrow">디지털윤리 창작콘텐츠 · 3차시 미션형 학습게임</div>
+      <h1 class="intro-title">가짜에 흔들리지 않는<br><em>진실 탐사대</em>가 되어보세요</h1>
+      <p class="intro-desc">4개의 스테이지를 돌며 사실확인 · 데이터편향성 · 딥페이크 · 딥보이스를 직접 조사하고 판단하는 3D 미션 게임이에요. 스테이지를 클리어할 때마다 완료 도장을 받고, 4개를 모두 마치면 학습 확인 문제 5개를 풀어 수료증과 나만의 성찰일기를 완성해보세요.</p>
+      <div class="stage-chips">
+        <div class="chip"><span class="dot" style="background:#45d9b8"></span>사실확인</div>
+        <div class="chip"><span class="dot" style="background:#f2a65a"></span>데이터편향성</div>
+        <div class="chip"><span class="dot" style="background:#b48cf2"></span>딥페이크</div>
+        <div class="chip"><span class="dot" style="background:#f0708a"></span>딥보이스</div>
+      </div>
+      <div class="name-row">
+        <input id="class-code" type="text" placeholder="학급코드 (예: 2학년 3반)" maxlength="16" style="width:150px;">
+        <input id="student-id" type="text" inputmode="numeric" placeholder="학번 (예: 20305)" maxlength="10" style="width:150px;">
+        <input id="player-name" type="text" placeholder="이름" maxlength="12" style="width:150px;">
+      </div>
+      <div class="avatar-select-label">✦ 나를 대표할 탐사대 아바타를 선택하세요</div>
+      <div class="avatar-select-row" id="avatar-select-row">
+        <button type="button" class="avatar-option" data-gender="boy" onclick="selectAvatarGender('boy')">
+          <div class="avatar-preview">🧑‍🚀</div>
+          <div class="avatar-option-label">남학생 아바타</div>
+        </button>
+        <button type="button" class="avatar-option" data-gender="girl" onclick="selectAvatarGender('girl')">
+          <div class="avatar-preview">👩‍🚀</div>
+          <div class="avatar-option-label">여학생 아바타</div>
+        </button>
+      </div>
+      <div id="login-error" style="display:none;color:var(--rose);font-size:13px;margin:0 0 20px;"></div>
+      <button class="btn btn-primary" onclick="startGame()">탐사 시작하기 →</button>
+      <div class="role-switch">선생님이신가요? <a onclick="openTeacherLogin()">교사 대시보드 열기 →</a></div>
+    </div>
+  </div>
+
+  <!-- ============ 교사 로그인 ============ -->
+  <div id="teacher-login-screen" class="screen">
+    <div class="intro-card">
+      <div class="intro-eyebrow">교사용</div>
+      <h1 class="intro-title">우리 학년 <em>전체 학급 결과</em>를<br>한눈에 확인해보세요</h1>
+      <p class="intro-desc">비밀번호만 입력하면 이 기기(브라우저)에 저장된 여러 학급의 학급코드와 학습 결과를 모두 모아볼 수 있어요. 다른 기기에서 학습한 학생의 결과는 학생이 다운로드한 결과 파일을 "가져오기"로 불러오면 함께 확인할 수 있어요.</p>
+      <div class="name-row">
+        <input id="teacher-password" type="password" placeholder="비밀번호" maxlength="30" style="width:220px;" onkeydown="if(event.key==='Enter') enterTeacherDashboard();">
+      </div>
+      <div id="teacher-login-error" style="display:none;color:var(--rose);font-size:13px;margin:0 0 20px;"></div>
+      <button class="btn btn-primary" onclick="enterTeacherDashboard()">대시보드 열기 →</button>
+      <div class="role-switch"><a onclick="openStudentLogin()">← 학생 화면으로 돌아가기</a></div>
+    </div>
+  </div>
+
+  <!-- ============ 교사 대시보드 ============ -->
+  <div id="teacher-dashboard-screen" class="screen">
+    <div class="teacher-wrap">
+      <div class="teacher-head">
+        <div>
+          <div class="intro-eyebrow" style="margin-bottom:6px;">교사 대시보드</div>
+          <h2 id="td-title" style="margin:0;font-size:22px;font-weight:900;">전체 학급 학습 현황</h2>
+        </div>
+        <div class="teacher-head-actions">
+          <button class="btn btn-primary btn-sm" onclick="openClassCodeManager()">🔑 학급코드 관리</button>
+          <button class="btn btn-ghost btn-sm" onclick="openStudentLogin()">학생 화면으로</button>
+          <button class="btn btn-ghost btn-sm" onclick="logoutTeacher()">로그아웃</button>
+        </div>
+      </div>
+
+      <div class="teacher-toolbar">
+        <select id="td-class-filter" onchange="renderTeacherTable()" style="background:var(--bg-panel);border:1px solid var(--line);color:var(--ink);padding:10px 14px;border-radius:10px;font-size:13px;font-family:inherit;">
+          <option value="">전체 학급 보기</option>
+        </select>
+        <input id="td-search" type="text" placeholder="🔍 학급·학번·이름 검색" oninput="renderTeacherTable()">
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer;">
+          📂 결과 파일 가져오기
+          <input type="file" id="td-import" accept="application/json" multiple style="display:none;" onchange="importResultFiles(this.files)">
+        </label>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ CSV로 내보내기</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearClassResults()">🗑 기록 삭제</button>
+      </div>
+
+      <div class="teacher-summary" id="td-summary"></div>
+
+      <div class="teacher-charts" id="td-class-achievement"></div>
+
+      <div class="teacher-charts" id="td-charts"></div>
+
+      <div class="teacher-charts" id="td-qa-analysis"></div>
+
+      <div class="teacher-table-wrap">
+        <table class="teacher-table" id="td-table">
+          <thead>
+            <tr>
+              <th>학급</th><th>학번</th><th>이름</th><th>상태</th><th>총점</th>
+              <th>🔍사실확인</th><th>⚖️편향성</th><th>🎭딥페이크</th><th>🎙️딥보이스</th>
+              <th>확인문제</th><th>성찰일기</th><th>피드백</th><th>최근 학습</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="td-tbody"></tbody>
+        </table>
+        <div id="td-empty" class="teacher-empty" style="display:none;">아직 학습 기록이 없어요. 학생이 학습을 마치면 이 기기에 자동으로 기록되고, 다른 기기의 결과는 "결과 파일 가져오기"로 불러올 수 있어요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 교사 - 학생 상세 보기 ============ -->
+  <div id="teacher-detail-modal">
+    <div class="mission-card" style="width:min(640px,100%);">
+      <div class="mission-head">
+        <div class="mission-icon" id="td-detail-icon" style="background:var(--teal-dim);">🎓</div>
+        <div class="mission-headtext">
+          <div class="eyebrow">학생 상세 결과</div>
+          <div class="title" id="td-detail-title">학생 이름</div>
+        </div>
+        <button class="mission-close" onclick="closeTeacherDetail()">✕</button>
+      </div>
+      <div class="mission-body" id="td-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ 교사 - 학급코드 생성/관리 ============ -->
+  <div id="classcode-modal">
+    <div class="mission-card" style="width:min(560px,100%);">
+      <div class="mission-head">
+        <div class="mission-icon" style="background:var(--gold-dim,rgba(245,197,107,0.16));">🔑</div>
+        <div class="mission-headtext">
+          <div class="eyebrow">교사용</div>
+          <div class="title">학급코드 생성 및 관리</div>
+        </div>
+        <button class="mission-close" onclick="closeClassCodeManager()">✕</button>
+      </div>
+      <div class="mission-body">
+        <p class="cc-desc">코드를 생성해서 학생들에게 나눠주세요. 학생은 로그인 화면의 "학급코드" 칸에 이 코드를 그대로 입력하면 돼요. (최대 <span id="cc-max-label">12</span>개까지 만들 수 있어요.)</p>
+
+        <div class="cc-bulk">
+          <div class="cc-bulk-title">📦 여러 학급 한번에 만들기</div>
+          <div class="cc-bulk-form">
+            <input id="cc-bulk-grade" type="text" placeholder="학년 (예: 2학년)" value="2학년" maxlength="10">
+            <input id="cc-bulk-from" type="number" min="1" max="99" value="1" title="시작 반">
+            <span class="cc-bulk-tilde">반 ~</span>
+            <input id="cc-bulk-to" type="number" min="1" max="99" value="12" title="끝 반">
+            <span class="cc-bulk-tilde">반</span>
+            <button class="btn btn-primary btn-sm" onclick="generateBulkClassCodes()">⚡ 한번에 생성</button>
+          </div>
+          <p class="cc-bulk-hint">예: "2학년" + 1반~12반을 입력하고 생성하면 "2학년 1반" ~ "2학년 12반" 학급코드 12개가 한번에 만들어져요. 이미 같은 이름의 학급이 있으면 자동으로 건너뛰어요.</p>
+        </div>
+
+        <div class="cc-single-title">➕ 학급 하나만 만들기</div>
+        <div class="cc-form">
+          <input id="cc-label-input" type="text" placeholder="반 이름(선택, 예: 3학년 2반)" maxlength="20">
+          <button class="btn btn-primary btn-sm" onclick="generateClassCode()">➕ 코드 생성</button>
+        </div>
+        <div id="cc-error" style="display:none;color:var(--rose);font-size:13px;margin:10px 0 0;"></div>
+        <div class="cc-list" id="cc-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 학생 - 선생님 피드백 수신함 ============ -->
+  <div id="feedback-modal">
+    <div class="mission-card" style="width:min(560px,100%);">
+      <div class="mission-head">
+        <div class="mission-icon" style="background:var(--teal-dim);">💬</div>
+        <div class="mission-headtext">
+          <div class="eyebrow">선생님이 보낸 메시지</div>
+          <div class="title">피드백 확인하기</div>
+        </div>
+        <button class="mission-close" onclick="closeFeedbackModal()">✕</button>
+      </div>
+      <div class="mission-body" id="feedback-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ 공용 확인창 ============ -->
+  <div id="confirm-modal">
+    <div class="confirm-card">
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost btn-sm" id="confirm-cancel-btn">취소</button>
+        <button class="btn btn-primary btn-sm" id="confirm-ok-btn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 3D 허브 ============ -->
+  <div id="hub-screen" class="screen">
+    <canvas id="three-canvas"></canvas>
+    <div id="hub-labels"></div>
+
+    <div class="hud-top">
+      <div class="hud-top-row">
+        <div class="hud-brand">
+          <div class="t1">진실 탐사대 HQ</div>
+          <div class="t2" id="hud-name">탐사대</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;pointer-events:auto;">
+          <div class="hud-score">
+            <div>
+              <div class="label">총점</div>
+              <div class="val"><span id="hud-total" class="num">0</span> / 100</div>
+            </div>
+            <div class="badge-row" id="hud-badges"></div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="hud-feedback-btn" style="display:none;" onclick="openFeedbackModal()">📩 선생님 피드백</button>
+          <button class="btn btn-ghost btn-sm" onclick="logoutGame()">로그아웃</button>
+        </div>
+      </div>
+      <div class="hud-stagebar" id="hud-stagebar"></div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="hint-pill">✦ 드래그해서 구조물을 돌려보고, 빛나는 스테이션을 클릭해 미션을 시작하세요</div>
+    </div>
+  </div>
+
+  <!-- ============ 미션 모달 ============ -->
+  <div id="mission-modal">
+    <div class="mission-card" id="mission-card">
+      <div class="mission-head">
+        <div class="mission-icon" id="m-icon">🔍</div>
+        <div class="mission-headtext">
+          <div class="eyebrow" id="m-eyebrow">STAGE 1</div>
+          <div class="title" id="m-title">사실확인 스테이지</div>
+        </div>
+        <div class="mission-progress" id="m-progress"></div>
+        <button class="mission-close" onclick="closeMission()">✕</button>
+      </div>
+      <div class="mission-body" id="m-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ 결과 보고서 ============ -->
+  <div id="report-screen" class="screen">
+    <div class="report-wrap" id="report-wrap"></div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const STAGES = [
+{
+  id:1, key:'fact', color:'#45d9b8', dim:'rgba(69,217,184,0.16)', icon:'🔍',
+  name:'사실확인 스테이지', subtitle:'뉴스룸의 비밀',
+  story:'여러 개의 게시물이 SNS에서 빠르게 퍼지고 있어요. 진짜와 가짜를 가려낼 단서를 직접 조사한 뒤 판단해보세요.',
+  items:[
+    { context:{ headline:'"급속 냉동 감자칩만 먹으면 3일 만에 5kg 빠진다" 화제',
+        meta:['출처 표시 없음','익명 커뮤니티 캡처']},
+      pre:{kind:'clues', label:'단서를 조사해보세요', clues:[
+        {label:'출처 확인', text:'이 글을 처음 올린 계정이나 언론사를 어디에서도 찾을 수 없어요.'},
+        {label:'다른 언론사 검색', text:'같은 내용을 보도한 신뢰할 수 있는 언론사가 하나도 없어요.'},
+        {label:'전문가 의견 확인', text:'영양학 전문가는 "의학적 근거가 없는 정보"라고 밝혔어요.'}
+      ]},
+      prompt:'이 게시물은 진짜 정보일까요, 가짜 정보일까요?',
+      options:[{text:'진짜 정보예요',correct:false},{text:'가짜 정보예요',correct:true}], multi:false,
+      explain:'출처가 없고, 다른 언론사에서도 확인되지 않고, 전문가가 부정한 정보예요. 세 단서가 모두 "위험 신호"를 가리키고 있어요.'
+    },
+    { context:{ headline:'서울시, 다음 달부터 등교 시간 30분 늦춘다',
+        meta:['OO일보 · 교육팀 기자 실명 표기','2026.09.03 작성']},
+      pre:{kind:'clues', label:'단서를 조사해보세요', clues:[
+        {label:'출처 확인', text:'정식 등록된 언론사이고, 기자 이름과 소속이 명확히 표기돼 있어요.'},
+        {label:'다른 언론사 검색', text:'다른 3개 언론사에서도 동일한 내용을 보도했어요.'},
+        {label:'작성일 확인', text:'교육청 공식 발표 다음 날 작성된 기사예요.'}
+      ]},
+      prompt:'이 게시물은 진짜 정보일까요, 가짜 정보일까요?',
+      options:[{text:'진짜 정보예요',correct:true},{text:'가짜 정보예요',correct:false}], multi:false,
+      explain:'출처가 분명하고, 여러 언론사가 같은 내용을 교차 보도했으며, 발표 시점과도 앞뒤가 맞아요. 이런 경우 신뢰도가 높아요.'
+    },
+    { context:{ headline:'"OO 아이돌, 사실은 AI였다?!" 충격 고백',
+        meta:['"뉴스속보"라는 이름의 블로그','작성일: 접속할 때마다 "오늘"로 표시']},
+      pre:{kind:'clues', label:'단서를 조사해보세요', clues:[
+        {label:'출처 확인', text:'언론사 등록 정보가 없고, 같은 블로그에 자극적인 글만 잔뜩 올라와 있어요.'},
+        {label:'다른 언론사 검색', text:'어떤 정식 언론사도 이 소식을 다루지 않았어요.'},
+        {label:'작성일 확인', text:'날짜가 매번 "오늘"로 자동 갱신돼요. 날짜를 조작해 최신 글처럼 보이게 만든 신호예요.'}
+      ]},
+      prompt:'이 게시물은 진짜 정보일까요, 가짜 정보일까요?',
+      options:[{text:'진짜 정보예요',correct:false},{text:'가짜 정보예요',correct:true}], multi:false,
+      explain:'자극적인 제목, 불분명한 출처, 조작된 날짜 표시까지 — 전형적인 가짜뉴스 패턴이 모두 나타났어요.'
+    },
+    { context:{ headline:'"이번 주말 OO공원에서 유튜버가 학생들 몰래 촬영 중" 긴급 공유',
+        meta:['글쓴이 이름·얼굴 비공개(익명 제보)','경찰이나 학교의 공식 확인 없음']},
+      pre:{kind:'clues', label:'단서를 조사해보세요', clues:[
+        {label:'출처 확인', text:'이 글을 처음 쓴 사람이 누구인지 나와 있지 않고, 계정도 최근 생성되었어요.'},
+        {label:'다른 언론사 검색', text:'경찰서나 정식 언론사 어디에도 접수된 기록이 없어요.'},
+        {label:'사진 출처 확인', text:'사진을 검색해보니 몇 년 전 다른 장소 사진을 그대로 가져다 썼어요.'}
+      ]},
+      prompt:'이 게시물은 진짜 정보일까요, 가짜 정보일까요?',
+      options:[{text:'진짜 정보예요',correct:false},{text:'가짜 정보예요',correct:true}], multi:false,
+      explain:'글쓴이를 알 수 없고 언론 확인도 안 되며 사진까지 도용한 가짜 정보예요.'
+    },
+    { context:{ headline:'교육부, 다음 학기부터 중학교 자유학기제 운영 방식 일부 개편 발표',
+        meta:['교육부 공식 홈페이지 보도자료','정책 담당 과장 실명 인터뷰 포함','2026.09.02 배포']},
+      pre:{kind:'clues', label:'단서를 조사해보세요', clues:[
+        {label:'출처 확인', text:'교육부 공식 누리집의 보도자료 게시판에 원문 그대로 올라와 있어요.'},
+        {label:'다른 언론사 검색', text:'여러 언론사가 같은 보도자료를 인용해 보도했어요.'},
+        {label:'작성일 확인', text:'배포 날짜와 기사 작성 날짜가 자연스럽게 일치해요.'}
+      ]},
+      prompt:'이 게시물은 진짜 정보일까요, 가짜 정보일까요?',
+      options:[{text:'진짜 정보예요',correct:true},{text:'가짜 정보예요',correct:false}], multi:false,
+      explain:'공식 보도자료에 기반하고 교차 확인이 가능한 신뢰도 높은 정보예요.'
+    }
+  ]
+},
+{
+  id:2, key:'bias', color:'#f2a65a', dim:'rgba(242,166,90,0.16)', icon:'⚖️',
+  name:'데이터편향성 스테이지', subtitle:'AI 채용 추천 시뮬레이션',
+  story:'한 회사의 AI 채용 추천 시스템이 특정 지원자만 추천하고 있어요. 무엇이 문제인지 데이터를 뜯어보고, 해결 방법을 골라보세요.',
+  items:[
+    { context:{ headline:'AI가 추천한 최종 후보, 데이터로 살펴보면?',
+        meta:['최근 5년간 합격자 데이터 500건 학습'],
+        datarows:[['남성 지원자 비율','92%'],['특정 대학 출신 비율','76%'],['특정 지역 거주자 비율','81%']]},
+      pre:{kind:'clues', label:'학습 데이터 더 살펴보기', clues:[
+        {label:'데이터 출처 확인', text:'이 데이터는 회사가 지난 5년간 실제로 채용해온 기록을 그대로 모은 것이에요.'},
+        {label:'채용 담당자 인터뷰', text:'"예전부터 특정 대학 출신을 선호하는 관행이 있었어요"라는 답변을 얻었어요.'}
+      ]},
+      prompt:'AI 추천이 특정 집단에 치우친 진짜 원인은 무엇일까요?',
+      options:[
+        {text:'지원자들의 실제 실력이 부족해서',correct:false},
+        {text:'과거 채용 데이터 자체가 특정 집단에 치우쳐 있어서',correct:true},
+        {text:'AI 서버의 처리 속도가 느려서',correct:false},
+        {text:'지원자 수가 너무 적어서',correct:false}
+      ], multi:false,
+      explain:'AI는 학습한 데이터를 그대로 따라가요. 과거 데이터에 편향이 있으면 결과도 편향돼요.'
+    },
+    { context:{ headline:'그렇다면 이 문제, 어떻게 해결해야 할까요?', meta:['해결 방안 선택하기']},
+      pre:null,
+      prompt:'가장 적절한 해결 방법을 골라보세요.',
+      options:[
+        {text:'편향을 그대로 둔 채 추천 인원만 늘린다',correct:false},
+        {text:'다양한 배경의 데이터를 추가하고, 결과가 한쪽으로 치우치지 않았는지 주기적으로 확인한다',correct:true},
+        {text:'AI 사용을 완전히 중단하고 다시는 쓰지 않는다',correct:false},
+        {text:'지원자에게 불합격 이유를 알려주지 않는다',correct:false}
+      ], multi:false,
+      explain:'다양한 데이터를 모으고 편향성을 지속적으로 검증하는 것이 올바른 해결책이에요.'
+    },
+    { context:{ headline:'다른 사례도 살펴볼까요? — 대출 심사 AI',
+        meta:['지원자 데이터 항목'], datarows:[['이름','문자열'],['거주지역','문자열'],['신용점수','숫자'],['취미','문자열']]},
+      pre:null,
+      prompt:'이 중 편향을 일으킬 가능성이 가장 큰 항목은 무엇일까요?',
+      options:[
+        {text:'이름',correct:false},
+        {text:'거주지역',correct:true},
+        {text:'신용점수',correct:false},
+        {text:'취미',correct:false}
+      ], multi:false,
+      explain:'거주지역은 소득 수준이나 특정 집단과 연관될 수 있어 차별을 유발할 수 있어요.'
+    },
+    { context:{ headline:'스마트폰 얼굴인식 잠금, 누군가에게는 유독 자주 실패한다?',
+        meta:['연구팀 조사 결과 인용'],
+        datarows:[['밝은 피부톤 학습 비율','78%'],['어두운 피부톤 학습 비율','22%'],['어두운 피부톤 인식 실패율','약 3배 높음']]},
+      pre:{kind:'clues', label:'학습 데이터 더 살펴보기', clues:[
+        {label:'학습 데이터 살펴보기', text:'얼굴인식 AI 훈련 사진 대부분이 특정 피부톤에 쏠려 있었어요.'},
+        {label:'개발팀 설명 확인', text:'개발팀도 다양한 사진을 충분히 모으지 못했다고 인정했어요.'}
+      ]},
+      prompt:'얼굴인식 AI가 특정 사용자에게서 더 자주 실패하는 진짜 원인은 무엇일까요?',
+      options:[
+        {text:'그 사용자들의 기종이 오래돼서',correct:false},
+        {text:'AI 학습 사진이 특정 피부톤에 치우쳐 있어서',correct:true},
+        {text:'얼굴을 화면에 잘못 대고 있어서',correct:false},
+        {text:'와이파이가 불안정해서',correct:false}
+      ], multi:false,
+      explain:'AI는 많이 본 데이터를 기준으로 판단해요. 학습 데이터가 편향되면 인식률도 차이가 납니다.'
+    },
+    { context:{ headline:'온라인 쇼핑몰 AI가 성별로만 추천한다면?',
+        meta:['해결 방안 선택하기']},
+      pre:null,
+      prompt:'가장 바람직한 개선 방향은 무엇일까요?',
+      options:[
+        {text:'성별을 추천의 유일한 기준으로 계속 둔다',correct:false},
+        {text:'성별에만 의존하지 않고, 실제 관심사와 검색 기록 등 다양한 정보를 균형 있게 반영한다',correct:true},
+        {text:'모든 학생에게 똑같은 광고 하나만 보여준다',correct:false},
+        {text:'추천 기능을 아무 설명 없이 없앤다',correct:false}
+      ], multi:false,
+      explain:'고정관념 대신 실제 관심사와 행동 데이터를 다양하게 반영하는 것이 바람직합니다.'
+    }
+  ]
+},
+{
+  id:3, key:'deepfake', color:'#b48cf2', dim:'rgba(180,140,242,0.16)', icon:'🎭',
+  name:'딥페이크 스테이지', subtitle:'합성 영상 속 단서 찾기',
+  story:'영상 속 얼굴 이미지를 살펴보고 부자연스러운 지점을 직접 클릭해서 찾아보세요.',
+  items:[
+    { context:{ headline:'영상 클리어 ①', meta:['출처: 익명 채널 인터뷰 영상']},
+      pre:{kind:'hotspot', label:'이상한 부분을 클릭해서 조사해보세요', hotspots:[
+        {x:150,y:96,r:22,anomaly:true,label:'A', note:'눈동자가 다른 방향을 보고 깜빡이는 타이밍도 어색해요.'},
+        {x:150,y:230,r:20,anomaly:false,label:'B', note:'입 모양과 목소리는 어긋나지 않아요.'},
+        {x:80,y:180,r:20,anomaly:false,label:'C', note:'귀와 머리카락 경계는 자연스러워요.'},
+        {x:150,y:30,r:20,anomaly:false,label:'D', note:'배경과 조명은 문제가 없어요.'}
+      ]},
+      prompt:'이 영상은 진짜일까요, 조작된 것일까요?',
+      options:[{text:'진짜 영상이에요',correct:false},{text:'조작된 영상(딥페이크)이에요',correct:true}], multi:false,
+      explain:'A 지점의 눈 깜빡임과 시선 처리가 부자연스러운 것은 딥페이크의 대표적 흔적입니다.'
+    },
+    { context:{ headline:'영상 클리어 ②', meta:['출처: 유명인 광고 영상']},
+      pre:{kind:'hotspot', label:'이상한 부분을 클릭해서 조사해보세요', hotspots:[
+        {x:150,y:90,r:20,anomaly:false,label:'A', note:'눈 깜빡임은 자연스러워요.'},
+        {x:150,y:225,r:22,anomaly:false,label:'B', note:'입 모양은 특별히 이상하지 않아요.'},
+        {x:78,y:185,r:22,anomaly:true,label:'C', note:'턱선 주변 피부 톤과 조명 방향이 배경과 어긋나요.'},
+        {x:150,y:32,r:20,anomaly:false,label:'D', note:'머리카락 위쪽은 자연스러워요.'}
+      ]},
+      prompt:'이 영상은 진짜일까요, 조작된 것일까요?',
+      options:[{text:'진짜 영상이에요',correct:false},{text:'조작된 영상(딥페이크)이에요',correct:true}], multi:false,
+      explain:'C 지점의 피부 톤 불일치와 어색한 경계선은 얼굴 합성의 흔적입니다.'
+    },
+    { context:{ headline:'영상 클리어 ③', meta:['출처: 학교 공식 채널 안내 영상']},
+      pre:{kind:'hotspot', label:'이상한 부분을 클릭해서 조사해보세요', hotspots:[
+        {x:150,y:92,r:20,anomaly:false,label:'A', note:'눈 깜빡임이 자연스러워요.'},
+        {x:150,y:228,r:20,anomaly:false,label:'B', note:'입 모양과 음성이 일치해요.'},
+        {x:80,y:182,r:20,anomaly:false,label:'C', note:'피부 경계가 매끄러워요.'},
+        {x:150,y:30,r:20,anomaly:false,label:'D', note:'조명이 일관돼요.'}
+      ]},
+      prompt:'네 지점을 모두 조사했어요. 이 영상은 진짜일까요, 조작된 것일까요?',
+      options:[{text:'진짜 영상이에요',correct:true},{text:'조작된 영상(딥페이크)이에요',correct:false}], multi:false,
+      explain:'모든 지점에서 자연스럽고 공식 채널 출처이므로 진짜 영상입니다.'
+    },
+    { context:{ headline:'영상 클리어 ④', meta:['출처: 단체 채팅방 캡처 영상']},
+      pre:{kind:'hotspot', label:'이상한 부분을 클릭해서 조사해보세요', hotspots:[
+        {x:150,y:96,r:22,anomaly:false,label:'A', note:'눈썹과 이마는 자연스러워요.'},
+        {x:150,y:230,r:20,anomaly:true,label:'B', note:'말할 때마다 치아 모양과 개수가 미세하게 변해요.'},
+        {x:80,y:180,r:20,anomaly:false,label:'C', note:'왼쪽 뺨은 자연스러워요.'},
+        {x:220,y:180,r:20,anomaly:false,label:'D', note:'오른쪽 뺨도 자연스러워요.'}
+      ]},
+      prompt:'이 영상은 진짜일까요, 조작된 것일까요?',
+      options:[{text:'진짜 영상이에요',correct:false},{text:'조작된 영상(딥페이크)이에요',correct:true}], multi:false,
+      explain:'말할 때 입안의 치아가 왜곡되거나 흐려지는 것은 입 합성의 한계점입니다.'
+    },
+    { context:{ headline:'영상 클리어 ⑤', meta:['출처: 긴급 속보 영상']},
+      pre:{kind:'hotspot', label:'이상한 부분을 클릭해서 조사해보세요', hotspots:[
+        {x:112,y:150,r:18,anomaly:true,label:'A', note:'왼쪽 눈과 오른쪽 눈 깜빡임 타이밍이 어긋나요.'},
+        {x:188,y:150,r:18,anomaly:false,label:'B', note:'오른쪽 눈 모양은 이상하지 않아요.'},
+        {x:150,y:200,r:18,anomaly:false,label:'C', note:'코와 입 사이는 자연스러워요.'},
+        {x:150,y:30,r:18,anomaly:false,label:'D', note:'머리카락은 자연스러워요.'}
+      ]},
+      prompt:'이 영상은 진짜일까요, 조작된 것일까요?',
+      options:[{text:'진짜 영상이에요',correct:false},{text:'조작된 영상(딥페이크)이에요',correct:true}], multi:false,
+      explain:'두 눈이 비대칭적으로 깜빡이는 것은 딥페이크 합성의 전형적 오류입니다.'
+    }
+  ]
+},
+{
+  id:4, key:'deepvoice', color:'#f0708a', dim:'rgba(240,112,138,0.16)', icon:'📞',
+  name:'딥보이스 스테이지', subtitle:'보이스피싱 음성 판별과 대응',
+  story:'전화 속 목소리를 듣고 의심 신호와 올바른 대응을 찾아보세요.',
+  items:[
+    { context:{ headline:'상황 A — 다급한 전화',
+        meta:['발신 번호: 저장되지 않은 번호'],
+        body:'"엄마 나야... 사고 나서 폰 망가졌어. 지금 당장 합의금 필요해. 일단 돈부터 보내줘. 빨리!"'},
+      pre:null,
+      prompt:'보이스피싱이 의심되는 신호를 모두 고르세요 (정답 2개)',
+      options:[
+        {text:'평소와 다르게 지나치게 재촉하고 있어요',correct:true},
+        {text:'"자세한 건 나중에"라며 구체적 확인을 피하고 있어요',correct:true},
+        {text:'사고 장소와 병원 이름을 정확히 말했어요',correct:false},
+        {text:'평소 자주 쓰던 말투를 그대로 썼어요',correct:false}
+      ], multi:true,
+      explain:'급박한 감정을 유도해 판단 시간을 빼앗고 확인을 피하는 것은 대표 수법입니다.'
+    },
+    { context:{ headline:'상황 B — 평범한 안부 전화',
+        meta:['발신 번호: 저장된 "엄마"'],
+        body:'"저녁 먹었어? 오늘 학교 별일 없었니? 엄마 지금 퇴근길이야. 조심히 들어가렴."'},
+      pre:null,
+      prompt:'이 통화에서 의심할 만한 점이 있나요?',
+      options:[
+        {text:'있다. 즉시 돈을 보내야 한다',correct:false},
+        {text:'없다. 평소와 같은 자연스러운 안부 전화다',correct:true},
+        {text:'있다. 다른 사람 번호다',correct:false},
+        {text:'없다. 계좌번호를 보내야 한다',correct:false}
+      ], multi:false,
+      explain:'저장된 번호이고 금전 요구가 없는 일상 안부 전화입니다.'
+    },
+    { context:{ headline:'상황 C — 공공기관 사칭',
+        meta:['발신 번호: 일반 대표번호와 다름'],
+        body:'"경찰청입니다. 고객님 계좌가 범죄에 연루되었으니 안전계좌로 즉시 이체하세요."'},
+      pre:null,
+      prompt:'가장 올바른 대응은?',
+      options:[
+        {text:'안내받은 계좌로 즉시 이체한다',correct:false},
+        {text:'전화를 끊고 공식 대표번호로 직접 전화해 사실을 확인한다',correct:true},
+        {text:'개인정보를 순서대로 알려준다',correct:false},
+        {text:'혼자 조용히 해결한다',correct:false}
+      ], multi:false,
+      explain:'공공기관은 전화로 안전계좌 이체를 절대 요구하지 않습니다. 끊고 직접 확인해야 합니다.'
+    },
+    { context:{ headline:'상황 D — 택배 배송 문자 및 전화',
+        meta:['문자 속 단축 URL 링크 포함'],
+        body:'"[OO택배] 주소 불명 반송 예정. 링크 클릭하여 확인 바랍니다. 오늘 미확인시 상품 폐기."'},
+      pre:null,
+      prompt:'의심되는 신호를 모두 고르세요 (정답 2개)',
+      options:[
+        {text:'공식 주소가 아닌 낯선 단축 링크를 누르라고 요구했어요',correct:true},
+        {text:'"오늘 중 폐기"라며 시간 압박으로 빠른 결정을 재촉해요',correct:true},
+        {text:'택배사 이름이 적혀 있어요',correct:false},
+        {text:'전화 상담원이 존댓말을 썼어요',correct:false}
+      ], multi:true,
+      explain:'알 수 없는 링크 클릭 요구와 시간 압박은 스미싱/피싱의 핵심 신호입니다.'
+    },
+    { context:{ headline:'상황 E — 선생님 사칭 문자',
+        meta:['발신 번호: 모르는 번호'],
+        body:'"선생님인데 행사 준비 중 급한 일이 생겼어. 문화상품권 5만원권 2장 사서 핀번호 사진 보내줄래?"'},
+      pre:null,
+      prompt:'가장 올바른 대응은?',
+      options:[
+        {text:'선생님이니 바로 사서 핀번호를 보낸다',correct:false},
+        {text:'문자로 답장하지 말고 학교나 원래 번호로 직접 사실 확인한다',correct:true},
+        {text:'부모님 몰래 하나만 먼저 사서 보낸다',correct:false},
+        {text:'친구들과 돈을 모아서 보낸다',correct:false}
+      ], multi:false,
+      explain:'상품권 핀번호 요구는 대표적 메신저 피싱 수법입니다. 반드시 직접 확인해야 합니다.'
+    }
+  ]
+}
+];
+
+const FINAL_QUIZ = [
+  { prompt:'가짜 뉴스를 판별할 때 확인해야 할 것으로 가장 알맞은 것은?',
+    options:[
+      {text:'제목이 자극적인지만 본다', correct:false},
+      {text:'출처, 작성일, 여러 언론사의 교차 보도 여부를 확인한다', correct:true},
+      {text:'조회수만 확인한다', correct:false},
+      {text:'댓글 수만 본다', correct:false}
+    ], multi:false,
+    explain:'출처의 신뢰도와 작성 시점, 교차 보도 확인이 가장 핵심입니다.'
+  },
+  { prompt:'AI 추천 시스템이 특정 집단에 편향된 결과를 내는 근본 원인은?',
+    options:[
+      {text:'서버 성능 부족', correct:false},
+      {text:'학습에 사용된 데이터 자체가 편향되어 있어서', correct:true},
+      {text:'사용자가 많아서', correct:false},
+      {text:'AI가 감정을 느껴서', correct:false}
+    ], multi:false,
+    explain:'AI는 학습 데이터의 패턴을 모방하므로 데이터의 편향이 결과로 나타납니다.'
+  },
+  { prompt:'딥페이크 영상을 의심할 때 살펴봐야 할 단서 2가지를 고르세요.',
+    options:[
+      {text:'눈 깜빡임과 시선 처리가 부자연스러운지', correct:true},
+      {text:'피부 경계선이나 조명 방향이 배경과 어긋나는지', correct:true},
+      {text:'영상 길이가 긴지', correct:false},
+      {text:'영상 화질이 깨끗한지', correct:false}
+    ], multi:true,
+    explain:'안면 미세 움직임 불일치 및 경계선 조명 왜곡이 주요 단서입니다.'
+  },
+  { prompt:'가족을 사칭하는 다급한 송금 요구 전화를 받았을 때 가장 올바른 대처는?',
+    options:[
+      {text:'일단 돈부터 보낸다', correct:false},
+      {text:'전화를 끊고 원래 알고 있던 번호로 직접 걸어 확인한다', correct:true},
+      {text:'비밀번호를 알려준다', correct:false},
+      {text:'아무에게도 말하지 않는다', correct:false}
+    ], multi:false,
+    explain:'일단 통화를 종료하고 직접 재확인하는 것이 기본 수칙입니다.'
+  },
+  { prompt:'디지털 정보를 접할 때 지녀야 할 가장 중요한 디지털 시민의식은?',
+    options:[
+      {text:'모든 정보를 무조건 믿는다', correct:false},
+      {text:'출처와 근거를 확인하며 비판적으로 수용하고 판단한다', correct:true},
+      {text:'재미있으면 사실 여부 관계없이 퍼뜨린다', correct:false},
+      {text:'많은 사람이 공유하면 무조건 진실이라 여긴다', correct:false}
+    ], multi:false,
+    explain:'스스로 비판적 사고를 발휘하여 검증하는 태도가 중요합니다.'
+  }
+];
+
+const state = {
+  classCode:'', playerName:'', studentId:'', gender:'',
+  journal:{hard:'', why:'', learn:''}, journalSubmittedAt:null,
+  stageResults:{},
+  current:{stageIdx:-1, itemIdx:0, answered:false, selected:new Set(), checkedHotspots:new Set(), openedClues:new Set()},
+  finalQuizDone:false, finalQuizScore:null,
+  finalQuiz:{idx:0, answered:false, selected:new Set(), results:[]},
+  feedback:{status:'none', teacherText:'', aiDraft:'', sentAt:null, readAt:null}
+};
+
+function emptyFeedback(){ return {status:'none', teacherText:'', aiDraft:'', sentAt:null, readAt:null}; }
+function emptySete(){ return {text:'', updatedAt:null}; }
+
+let threeInited = false;
+let selectedGender = '';
+function selectAvatarGender(g){
+  selectedGender = g;
+  applyAvatarSelectUI(g);
+}
+function applyAvatarSelectUI(g){
+  const row = document.getElementById('avatar-select-row');
+  if(!row) return;
+  row.querySelectorAll('.avatar-option').forEach(btn=>{
+    btn.classList.toggle('selected', btn.dataset.gender === g);
+  });
+}
+
+function startGame(){
+  const ccEl = document.getElementById('class-code');
+  const idEl = document.getElementById('student-id');
+  const nmEl = document.getElementById('player-name');
+  const cc = ccEl.value.trim();
+  const id = idEl.value.trim();
+  const nm = nmEl.value.trim();
+  const errEl = document.getElementById('login-error');
+
+  if(!cc || !id || !nm || !selectedGender){
+    errEl.textContent = !selectedGender
+      ? '탐사대 아바타(남학생/여학생)를 선택해주세요.'
+      : '학급코드, 학번, 이름을 모두 입력해주세요.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  state.classCode = cc;
+  state.studentId = id;
+  state.playerName = nm;
+  state.gender = selectedGender;
+  const avatarEmoji = state.gender === 'girl' ? '👩‍🚀' : '🧑‍🚀';
+  document.getElementById('hud-name').textContent = `${id} · ${nm} 탐사대 ${avatarEmoji}`;
+
+  restoreSavedProgress();
+  saveResultRecord();
+
+  switchScreen('hub-screen');
+  if(!threeInited){
+    initThree();
+    threeInited = true;
+    refreshHubUI();
+  } else {
+    setAvatarGender(state.gender);
+    refreshHubUI();
+  }
+}
+
+function showConfirm(message, onConfirm, onCancel){
+  const modal = document.getElementById('confirm-modal');
+  document.getElementById('confirm-msg').textContent = message;
+  modal.classList.add('active');
+  const okBtn = document.getElementById('confirm-ok-btn');
+  const cancelBtn = document.getElementById('confirm-cancel-btn');
+  cancelBtn.style.display = '';
+  function cleanup(){
+    modal.classList.remove('active');
+    okBtn.removeEventListener('click', onOk);
+    cancelBtn.removeEventListener('click', onCancelClick);
+  }
+  function onOk(){ cleanup(); if(typeof onConfirm==='function') onConfirm(); }
+  function onCancelClick(){ cleanup(); if(typeof onCancel==='function') onCancel(); }
+  okBtn.addEventListener('click', onOk);
+  cancelBtn.addEventListener('click', onCancelClick);
+}
+
+function showAlert(message, onOk){
+  const modal = document.getElementById('confirm-modal');
+  document.getElementById('confirm-msg').textContent = message;
+  modal.classList.add('active');
+  const okBtn = document.getElementById('confirm-ok-btn');
+  const cancelBtn = document.getElementById('confirm-cancel-btn');
+  cancelBtn.style.display = 'none';
+  function cleanup(){
+    modal.classList.remove('active');
+    cancelBtn.style.display = '';
+    okBtn.removeEventListener('click', onOkClick);
+  }
+  function onOkClick(){ cleanup(); if(typeof onOk==='function') onOk(); }
+  okBtn.addEventListener('click', onOkClick);
+}
+
+function logoutGame(){
+  showConfirm('로그아웃할까요?\n진행 상황은 안전하게 저장됩니다.', function(){
+    saveResultRecord();
+    state.classCode = '';
+    state.playerName = '';
+    state.studentId = '';
+    state.gender = '';
+    selectedGender = '';
+    applyAvatarSelectUI('');
+    state.stageResults = {};
+    document.getElementById('mission-modal').classList.remove('active');
+    switchScreen('intro-screen');
+  });
+}
+
+function openTeacherLogin(){
+  switchScreen('teacher-login-screen');
+  const pwEl = document.getElementById('teacher-password');
+  if(pwEl) pwEl.value = '';
+}
+function openStudentLogin(){ switchScreen('intro-screen'); }
+function logoutTeacher(){ switchScreen('intro-screen'); }
+
+const RESULTS_KEY = 'digitalEthicsGameResults_v1';
+function loadAllResults(){
+  try{ const raw = localStorage.getItem(RESULTS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; }
+}
+function saveAllResults(list){
+  try{ localStorage.setItem(RESULTS_KEY, JSON.stringify(list)); return true; }catch(e){ return false; }
+}
+
+const CLASS_CODES_KEY = 'digitalEthicsGameClassCodes_v1';
+let editingClassCode = null;
+function loadClassCodes(){
+  try{ const raw = localStorage.getItem(CLASS_CODES_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; }
+}
+function saveClassCodes(list){
+  try{ localStorage.setItem(CLASS_CODES_KEY, JSON.stringify(list)); return true; }catch(e){ return false; }
+}
+
+function openClassCodeManager(){
+  document.getElementById('classcode-modal').classList.add('active');
+  renderClassCodeList();
+}
+function closeClassCodeManager(){ document.getElementById('classcode-modal').classList.remove('active'); }
+
+function makeRandomClassCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = ''; for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+function generateClassCode(){
+  const list = loadClassCodes();
+  const labelEl = document.getElementById('cc-label-input');
+  const label = labelEl.value.trim();
+  let code; do{ code = makeRandomClassCode(); } while(list.some(c=>c.code===code));
+  list.unshift({code, label, createdAt:new Date().toISOString()});
+  saveClassCodes(list);
+  labelEl.value = '';
+  renderClassCodeList();
+}
+function generateBulkClassCodes(){
+  const grade = (document.getElementById('cc-bulk-grade').value||'').trim();
+  let from = parseInt(document.getElementById('cc-bulk-from').value, 10);
+  let to = parseInt(document.getElementById('cc-bulk-to').value, 10);
+  if(!grade || isNaN(from) || isNaN(to)) return;
+  if(from>to){ const t=from; from=to; to=t; }
+  let list = loadClassCodes();
+  const existingLabels = new Set(list.map(c=>c.label));
+  for(let n=from; n<=to; n++){
+    const label = `${grade} ${n}반`;
+    if(existingLabels.has(label)) continue;
+    let code; do{ code = makeRandomClassCode(); } while(list.some(c=>c.code===code));
+    list.unshift({code, label, createdAt:new Date().toISOString()});
+  }
+  saveClassCodes(list);
+  renderClassCodeList();
+}
+function deleteClassCode(code){
+  const list = loadClassCodes().filter(c=>c.code!==code);
+  saveClassCodes(list);
+  renderClassCodeList();
+}
+function copyClassCode(code){
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code);
+}
+function renderClassCodeList(){
+  const wrap = document.getElementById('cc-list');
+  const codes = loadClassCodes();
+  if(!codes.length){ wrap.innerHTML='<div class="cc-empty">생성된 코드가 없습니다.</div>'; return; }
+  wrap.innerHTML = codes.map(c=>`
+    <div class="cc-item">
+      <div><span class="cc-code">${c.code}</span> <small>${c.label||''}</small></div>
+      <div class="cc-actions">
+        <button class="btn btn-ghost btn-sm" onclick="copyClassCode('${c.code}')">복사</button>
+        <button class="btn btn-ghost btn-sm" onclick="deleteClassCode('${c.code}')">삭제</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildResultRecord(){
+  let total = 0;
+  STAGES.forEach(st=>{ total += (state.stageResults[st.id]?.score||0); });
+  return {
+    classCode: state.classCode, studentId: state.studentId, playerName: state.playerName,
+    gender: state.gender, stageResults: state.stageResults,
+    finalQuizDone: state.finalQuizDone, finalQuizScore: state.finalQuizScore,
+    totalScore: Math.round(total), completed: allStagesDone() && state.finalQuizDone,
+    journal: state.journal, journalSubmittedAt: state.journalSubmittedAt,
+    feedback: state.feedback, updatedAt: new Date().toISOString()
+  };
+}
+
+function saveResultRecord(){
+  if(!state.classCode || !state.studentId) return;
+  const rec = buildResultRecord();
+  const list = loadAllResults();
+  const idx = list.findIndex(r=>r.classCode===rec.classCode && r.studentId===rec.studentId);
+  if(idx>=0){ rec.sete = list[idx].sete || emptySete(); list[idx] = rec; }
+  else { rec.sete = emptySete(); list.push(rec); }
+  saveAllResults(list);
+}
+
+function restoreSavedProgress(){
+  const list = loadAllResults();
+  const rec = list.find(r=>r.classCode===state.classCode && r.studentId===state.studentId);
+  if(!rec) return;
+  if(!state.gender && rec.gender) state.gender = rec.gender;
+  state.stageResults = rec.stageResults||{};
+  state.finalQuizDone = !!rec.finalQuizDone;
+  state.finalQuizScore = rec.finalQuizScore || null;
+  state.journal = rec.journal || {hard:'', why:'', learn:''};
+  state.journalSubmittedAt = rec.journalSubmittedAt || null;
+  state.feedback = rec.feedback || emptyFeedback();
+}
+
+function collectJournalFromDOM(){
+  const h = document.getElementById('j-hard'), w = document.getElementById('j-why'), l = document.getElementById('j-learn');
+  if(h) state.journal.hard = h.value;
+  if(w) state.journal.why = w.value;
+  if(l) state.journal.learn = l.value;
+}
+
+function saveAndDownloadResult(){
+  collectJournalFromDOM();
+  saveResultRecord();
+  const rec = buildResultRecord();
+  const blob = new Blob([JSON.stringify(rec, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${rec.classCode}_${rec.studentId}_${rec.playerName}_결과.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function feedbackHTML(){
+  const fb = state.feedback || emptyFeedback();
+  if(!fb.teacherText) return '<div class="report-feedback-empty">아직 전달된 피드백이 없습니다.</div>';
+  return `<div class="feedback-box"><div class="txt">${fb.teacherText}</div></div>`;
+}
+function updateFeedbackBadge(){
+  const btn = document.getElementById('hud-feedback-btn');
+  if(!btn) return;
+  btn.style.display = (state.feedback && state.feedback.teacherText) ? 'inline-flex' : 'none';
+}
+function openFeedbackModal(){
+  document.getElementById('feedback-modal-body').innerHTML = feedbackHTML();
+  document.getElementById('feedback-modal').classList.add('active');
+}
+function closeFeedbackModal(){ document.getElementById('feedback-modal').classList.remove('active'); }
+
+async function downloadCertificateImage(){
+  const certEl = document.querySelector('.certificate');
+  if(!certEl || typeof html2canvas === 'undefined') return;
+  const canvas = await html2canvas(certEl, {backgroundColor:'#111a33', scale:2});
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `${state.studentId}_수료증.png`;
+  a.click();
+}
+
+const TEACHER_PASSWORD = 'teacher2026';
+let teacherSelectedClass = '';
+function enterTeacherDashboard(){
+  const pw = document.getElementById('teacher-password').value;
+  if(pw !== TEACHER_PASSWORD){
+    document.getElementById('teacher-login-error').textContent = '비밀번호가 올바르지 않습니다.';
+    document.getElementById('teacher-login-error').style.display = 'block';
+    return;
+  }
+  switchScreen('teacher-dashboard-screen');
+  renderTeacherTable();
+}
+
+function getClassLabel(studentId){
+  const id = (studentId||'').trim();
+  const digits = id.replace(/[^0-9]/g,'');
+  if(digits.length < 3) return id || '학급 미상';
+  return `${digits.slice(0, 1)}학년 ${parseInt(digits.slice(1, -2), 10)}반`;
+}
+
+function renderTeacherTable(){
+  let list = loadAllResults();
+  const tbody = document.getElementById('td-tbody');
+  if(!list.length){
+    document.getElementById('td-empty').style.display='block';
+    tbody.innerHTML='';
+    return;
+  }
+  document.getElementById('td-empty').style.display='none';
+  tbody.innerHTML = list.map((r,i)=>`
+    <tr onclick="openTeacherDetail(${i})">
+      <td>${getClassLabel(r.studentId)}</td>
+      <td>${r.studentId}</td>
+      <td>${r.playerName}</td>
+      <td>${r.completed ? '완료' : '진행중'}</td>
+      <td style="color:var(--gold);font-weight:700;">${r.totalScore}점</td>
+      <td>${r.stageResults[1]?.score||'-'}</td>
+      <td>${r.stageResults[2]?.score||'-'}</td>
+      <td>${r.stageResults[3]?.score||'-'}</td>
+      <td>${r.stageResults[4]?.score||'-'}</td>
+      <td>${r.finalQuizScore?`${r.finalQuizScore.correct}/${r.finalQuizScore.total}`:'-'}</td>
+      <td>${r.journalSubmittedAt?'제출':'미제출'}</td>
+      <td>${r.feedback?.status==='sent'?'전달됨':'-'}</td>
+      <td>${r.updatedAt?r.updatedAt.slice(5,16):'-'}</td>
+      <td>상세 보기</td>
+    </tr>
+  `).join('');
+  window._tdCurrentList = list;
+}
+
+function openTeacherDetail(i){
+  const r = window._tdCurrentList[i];
+  if(!r) return;
+  window._tdCurrentDetailIdx = i;
+  document.getElementById('td-detail-title').textContent = `${r.studentId} · ${r.playerName}`;
+  document.getElementById('td-detail-body').innerHTML = `
+    <div><b>총점:</b> ${r.totalScore}점</div>
+    <div><b>성찰일기:</b> ${r.journal?.why||'없음'} / ${r.journal?.learn||''}</div>
+    <div style="margin-top:16px;">
+      <textarea id="td-feedback-text" class="td-feedback-textarea" placeholder="학생에게 보낼 피드백 입력">${r.feedback?.teacherText||''}</textarea>
+      <button class="btn btn-primary btn-sm" onclick="sendFeedbackToStudent()" style="margin-top:8px;">피드백 전달</button>
+    </div>
+  `;
+  document.getElementById('teacher-detail-modal').classList.add('active');
+}
+function closeTeacherDetail(){ document.getElementById('teacher-detail-modal').classList.remove('active'); }
+
+function sendFeedbackToStudent(){
+  const idx = window._tdCurrentDetailIdx;
+  const cached = window._tdCurrentList[idx];
+  const text = document.getElementById('td-feedback-text').value.trim();
+  const list = loadAllResults();
+  const real = list.find(r=>r.classCode===cached.classCode && r.studentId===cached.studentId);
+  if(real){
+    real.feedback = {status:'sent', teacherText:text, sentAt:new Date().toISOString()};
+    saveAllResults(list);
+    renderTeacherTable();
+    closeTeacherDetail();
+  }
+}
+
+function importResultFiles(files){
+  if(!files.length) return;
+  const list = loadAllResults();
+  Array.from(files).forEach(f=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const rec = JSON.parse(reader.result);
+        const idx = list.findIndex(r=>r.classCode===rec.classCode && r.studentId===rec.studentId);
+        if(idx>=0) list[idx]=rec; else list.push(rec);
+        saveAllResults(list);
+        renderTeacherTable();
+      }catch(e){}
+    };
+    reader.readAsText(f);
+  });
+}
+
+function exportCSV(){
+  const list = loadAllResults();
+  const csv = '학급,학번,이름,총점\n' + list.map(r=>`"${getClassLabel(r.studentId)}","${r.studentId}","${r.playerName}",${r.totalScore}`).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='학습결과.csv'; a.click();
+}
+function clearClassResults(){
+  showConfirm('모든 기록을 삭제할까요?', ()=>{ saveAllResults([]); renderTeacherTable(); });
+}
+
+function switchScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* Three.js */
+let scene, camera, renderer, hubGroup, nodeMeshes=[], centerMesh, raycaster, mouseNDC=new THREE.Vector2();
+let dragging=false, lastX=0, lastY=0, rotY=0.5, rotX=0.18, autoSpin=true;
+let clock = new THREE.Clock();
+
+function initThree(){
+  const canvas = document.getElementById('three-canvas');
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(52, window.innerWidth/window.innerHeight, 0.1, 200);
+  camera.position.set(0,0,15);
+
+  renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x080b17,1);
+
+  scene.add(new THREE.AmbientLight(0x8899ff, 0.7));
+  const pl = new THREE.PointLight(0xffffff, 1.2, 50); pl.position.set(5,5,10); scene.add(pl);
+
+  hubGroup = new THREE.Group(); scene.add(hubGroup);
+
+  centerMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.3, 1), new THREE.MeshStandardMaterial({color:0x1a2550, emissive:0x2a3a7a}));
+  hubGroup.add(centerMesh);
+
+  STAGES.forEach((st, i)=>{
+    const angle = -Math.PI/2 + i*(Math.PI*2/4);
+    const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.6,0), new THREE.MeshStandardMaterial({color:st.color, emissive:st.color, emissiveIntensity:0.5}));
+    mesh.position.set(4*Math.cos(angle), 0, 4*Math.sin(angle));
+    mesh.userData = {stageIdx:i, baseY:0};
+    hubGroup.add(mesh);
+    nodeMeshes.push(mesh);
+  });
+
+  const repMesh = new THREE.Mesh(new THREE.TorusKnotGeometry(0.4,0.12,32,8), new THREE.MeshStandardMaterial({color:0xf5c56b, emissive:0xf5c56b}));
+  repMesh.position.set(0, 2.5, 0);
+  repMesh.userData = {isReport:true, baseY:2.5};
+  hubGroup.add(repMesh);
+  nodeMeshes.push(repMesh);
+
+  raycaster = new THREE.Raycaster();
+
+  canvas.addEventListener('pointerdown', e=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; });
+  window.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    rotY += (e.clientX-lastX)*0.005;
+    rotX += (e.clientY-lastY)*0.005;
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  window.addEventListener('pointerup', ()=>{ dragging=false; });
+  canvas.addEventListener('click', onCanvasClick);
+  window.addEventListener('resize', ()=>{
+    camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  buildLabels();
+  animate();
+}
+
+function onCanvasClick(e){
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouseNDC.x = ((e.clientX-rect.left)/rect.width)*2-1;
+  mouseNDC.y = -((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouseNDC, camera);
+  const hits = raycaster.intersectObjects(nodeMeshes);
+  if(hits.length>0){
+    const obj = hits[0].object;
+    if(obj.userData.isReport) tryOpenReport();
+    else openMission(obj.userData.stageIdx);
+  }
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(!dragging) rotY += 0.001;
+  hubGroup.rotation.y = rotY; hubGroup.rotation.x = rotX*0.3;
+  renderer.render(scene, camera);
+  updateLabels();
+}
+
+let labelEls = [];
+function buildLabels(){
+  const wrap = document.getElementById('hub-labels');
+  wrap.innerHTML=''; labelEls=[];
+  STAGES.forEach((st,i)=>{
+    const el = document.createElement('div');
+    el.className='hub-label';
+    el.innerHTML = `<div class="card" onclick="openMission(${i})">
+      <div class="num">STAGE ${i+1}</div>
+      <div class="name">${st.icon} ${st.name}</div>
+      <div class="stat" data-stat>미탐사</div>
+    </div>`;
+    wrap.appendChild(el);
+    labelEls.push({el, mesh:nodeMeshes[i]});
+  });
+  const repEl = document.createElement('div');
+  repEl.className='hub-label report';
+  repEl.id='report-label';
+  repEl.innerHTML = `<div class="card" onclick="tryOpenReport()">
+    <div class="num">FINAL</div><div class="name">🏆 확인문제 & 수료증</div>
+  </div>`;
+  wrap.appendChild(repEl);
+  labelEls.push({el:repEl, mesh:nodeMeshes[4], isReport:true});
+}
+
+function updateLabels(){
+  const w = window.innerWidth, h = window.innerHeight;
+  labelEls.forEach(item=>{
+    const pos = item.mesh.position.clone().applyMatrix4(hubGroup.matrixWorld);
+    const proj = pos.clone().project(camera);
+    item.el.style.left = ((proj.x*0.5+0.5)*w)+'px';
+    item.el.style.top = ((-proj.y*0.5+0.5)*h)+'px';
+    item.el.style.opacity = (proj.z > 1 || (item.isReport && !allStagesDone())) ? '0' : '1';
+  });
+}
+
+function tryOpenReport(){
+  if(!allStagesDone()) return;
+  if(!state.finalQuizDone) openFinalQuizIntro();
+  else openReport();
+}
+function allStagesDone(){ return Object.keys(state.stageResults).length === STAGES.length; }
+
+function refreshHubUI(){
+  let total=0;
+  STAGES.forEach(st=>{ if(state.stageResults[st.id]) total+=state.stageResults[st.id].score; });
+  document.getElementById('hud-total').textContent = Math.round(total);
+  labelEls.forEach((item,i)=>{
+    if(item.isReport) return;
+    const done = state.stageResults[STAGES[i].id];
+    item.el.classList.toggle('done', !!done);
+    item.el.querySelector('[data-stat]').textContent = done ? `완료 (${done.score}점)` : '미탐사';
+  });
+  document.getElementById('report-label').classList.toggle('unlocked', allStagesDone());
+}
+
+function openMission(idx){
+  const st = STAGES[idx]; if(!st) return;
+  state.current = {stageIdx:idx, itemIdx:0, answered:false, selected:new Set(), checkedHotspots:new Set(), openedClues:new Set()};
+  document.getElementById('mission-modal').classList.add('active');
+  renderMission();
+}
+function closeMission(){ document.getElementById('mission-modal').classList.remove('active'); }
+
+function renderMission(){
+  const st = STAGES[state.current.stageIdx];
+  const item = st.items[state.current.itemIdx];
+  const modal = document.getElementById('mission-card');
+  modal.style.setProperty('--stage-color', st.color);
+  modal.style.setProperty('--stage-dim', st.dim);
+
+  document.getElementById('m-icon').textContent = st.icon;
+  document.getElementById('m-eyebrow').textContent = `STAGE ${st.id} · ${state.current.itemIdx+1}/${st.items.length}`;
+  document.getElementById('m-title').textContent = st.name;
+
+  let html = `<div class="story-box">${item.context?.headline||''}</div>`;
+  if(item.pre?.kind==='clues'){
+    html += `<div class="clue-btns">` + item.pre.clues.map((c,i)=>`<button class="clue-btn" onclick="openClue(${i})">${c.label}</button>`).join('') + `</div><div class="clue-reveal" id="clue-reveal"></div>`;
+  }
+  html += `<div class="question-block">
+    <div class="q">${item.prompt}</div>
+    <div class="opt-list">` + item.options.map((o,i)=>`<div class="opt" id="opt-${i}" onclick="toggleOption(${i})"><div class="mark"></div><div>${o.text}</div></div>`).join('') + `</div>
+    <div class="explain-box" id="explain-box"></div>
+    <div class="mission-foot">
+      <button class="btn btn-primary btn-sm" id="submit-btn" onclick="submitAnswer()">답 제출하기</button>
+    </div>
+  </div>`;
+  document.getElementById('m-body').innerHTML = html;
+}
+
+function openClue(ci){
+  const item = STAGES[state.current.stageIdx].items[state.current.itemIdx];
+  const clue = item.pre.clues[ci];
+  document.getElementById('clue-reveal').innerHTML += `<div class="clue-note">${clue.label}: ${clue.text}</div>`;
+}
+
+function toggleOption(oi){
+  if(state.current.answered) return;
+  const item = STAGES[state.current.stageIdx].items[state.current.itemIdx];
+  if(item.multi){
+    if(state.current.selected.has(oi)) state.current.selected.delete(oi);
+    else state.current.selected.add(oi);
+  } else {
+    state.current.selected = new Set([oi]);
+  }
+  item.options.forEach((_,i)=>{
+    document.getElementById(`opt-${i}`).classList.toggle('selected', state.current.selected.has(i));
+  });
+}
+
+function submitAnswer(){
+  if(state.current.answered) return;
+  const item = STAGES[state.current.stageIdx].items[state.current.itemIdx];
+  if(!state.current.selected.size) return;
+  state.current.answered = true;
+  const correctSet = new Set(item.options.map((o,i)=>o.correct?i:-1).filter(i=>i>=0));
+  let isCorrect = correctSet.size===state.current.selected.size && [...state.current.selected].every(s=>correctSet.has(s));
+
+  item.options.forEach((o,i)=>{
+    const el = document.getElementById(`opt-${i}`);
+    if(o.correct) el.classList.add('correct');
+    else if(state.current.selected.has(i)) el.classList.add('wrong');
+  });
+
+  const box = document.getElementById('explain-box');
+  box.classList.add('show', isCorrect?'ok':'no');
+  box.innerHTML = `<span class="tag">${isCorrect?'정답!':'오답'}</span> ${item.explain}`;
+
+  const foot = document.querySelector('.mission-foot');
+  foot.innerHTML = `<button class="btn btn-primary btn-sm" onclick="nextItem()">다음 →</button>`;
+
+  if(!state._tmp) state._tmp = {};
+  const stId = STAGES[state.current.stageIdx].id;
+  if(!state._tmp[stId]) state._tmp[stId] = [];
+  state._tmp[stId][state.current.itemIdx] = {correct:isCorrect};
+}
+
+function nextItem(){
+  const st = STAGES[state.current.stageIdx];
+  if(state.current.itemIdx < st.items.length-1){
+    state.current.itemIdx++;
+    state.current.answered = false;
+    state.current.selected = new Set();
+    renderMission();
+  } else {
+    const list = state._tmp[st.id]||[];
+    const correct = list.filter(x=>x.correct).length;
+    state.stageResults[st.id] = {correct, total:st.items.length, score:Math.round(correct/st.items.length*25)};
+    refreshHubUI();
+    saveResultRecord();
+    closeMission();
+    if(allStagesDone()) tryOpenReport();
+  }
+}
+
+function openFinalQuizIntro(){
+  openFinalQuiz();
+}
+function openFinalQuiz(){
+  state.finalQuiz = {idx:0, answered:false, selected:new Set(), results:[]};
+  document.getElementById('mission-modal').classList.add('active');
+  renderFinalQuiz();
+}
+function renderFinalQuiz(){
+  const item = FINAL_QUIZ[state.finalQuiz.idx];
+  document.getElementById('m-title').textContent = `학습 확인 문제 (${state.finalQuiz.idx+1}/${FINAL_QUIZ.length})`;
+  document.getElementById('m-body').innerHTML = `
+    <div class="question-block">
+      <div class="q">${item.prompt}</div>
+      <div class="opt-list">` + item.options.map((o,i)=>`<div class="opt" id="opt-${i}" onclick="toggleFinalOption(${i})"><div class="mark"></div><div>${o.text}</div></div>`).join('') + `</div>
+      <div class="explain-box" id="explain-box"></div>
+      <div class="mission-foot">
+        <button class="btn btn-primary btn-sm" onclick="submitFinalAnswer()">제출</button>
+      </div>
+    </div>
+  `;
+}
+function toggleFinalOption(oi){
+  if(state.finalQuiz.answered) return;
+  const item = FINAL_QUIZ[state.finalQuiz.idx];
+  if(item.multi){
+    if(state.finalQuiz.selected.has(oi)) state.finalQuiz.selected.delete(oi);
+    else state.finalQuiz.selected.add(oi);
+  } else {
+    state.finalQuiz.selected = new Set([oi]);
+  }
+  item.options.forEach((_,i)=>{
+    document.getElementById(`opt-${i}`).classList.toggle('selected', state.finalQuiz.selected.has(i));
+  });
+}
+function submitFinalAnswer(){
+  if(state.finalQuiz.answered) return;
+  const item = FINAL_QUIZ[state.finalQuiz.idx];
+  if(!state.finalQuiz.selected.size) return;
+  state.finalQuiz.answered = true;
+  const correctSet = new Set(item.options.map((o,i)=>o.correct?i:-1).filter(i=>i>=0));
+  let isCorrect = correctSet.size===state.finalQuiz.selected.size && [...state.finalQuiz.selected].every(s=>correctSet.has(s));
+  state.finalQuiz.results[state.finalQuiz.idx] = {correct:isCorrect};
+
+  item.options.forEach((o,i)=>{
+    const el = document.getElementById(`opt-${i}`);
+    if(o.correct) el.classList.add('correct');
+    else if(state.finalQuiz.selected.has(i)) el.classList.add('wrong');
+  });
+
+  const box = document.getElementById('explain-box');
+  box.classList.add('show', isCorrect?'ok':'no');
+  box.innerHTML = `<span class="tag">${isCorrect?'정답!':'오답'}</span> ${item.explain}`;
+
+  document.querySelector('.mission-foot').innerHTML = `<button class="btn btn-primary btn-sm" onclick="nextFinalItem()">다음</button>`;
+}
+function nextFinalItem(){
+  if(state.finalQuiz.idx < FINAL_QUIZ.length-1){
+    state.finalQuiz.idx++;
+    state.finalQuiz.answered = false;
+    state.finalQuiz.selected = new Set();
+    renderFinalQuiz();
+  } else {
+    const correct = state.finalQuiz.results.filter(r=>r.correct).length;
+    state.finalQuizDone = true;
+    state.finalQuizScore = {correct, total:FINAL_QUIZ.length};
+    saveResultRecord();
+    closeMission();
+    openReport();
+  }
+}
+
+function openReport(){
+  switchScreen('report-screen');
+  renderReport();
+}
+function renderReport(){
+  let total = 0;
+  STAGES.forEach(st=>{ if(state.stageResults[st.id]) total+=state.stageResults[st.id].score; });
+  const fq = state.finalQuizScore || {correct:0, total:5};
+  document.getElementById('report-wrap').innerHTML = `
+    <div class="certificate">
+      <div class="cert-title">수 료 증</div>
+      <div class="cert-name">${state.studentId} · ${state.playerName}</div>
+      <div class="cert-body">디지털윤리 4대 미션 학습게임 「진실 탐사대」의 전 과정을 우수한 성적으로 이수하였음을 증명합니다.</div>
+      <div class="cert-meta">
+        <div>총점: <b>${Math.round(total)}점 / 100점</b></div>
+        <div>확인문제: <b>${fq.correct}/${fq.total} 정답</b></div>
+      </div>
+    </div>
+    <div class="report-section">
+      <h3>📝 성찰일기</h3>
+      <textarea id="j-why" placeholder="가장 기억에 남는 점이나 어려웠던 점" class="journal-field">${state.journal.why||''}</textarea>
+      <textarea id="j-learn" placeholder="배운 점과 다짐" class="journal-field" style="margin-top:8px;">${state.journal.learn||''}</textarea>
+      <button class="btn btn-primary btn-sm" onclick="submitJournal()" style="margin-top:10px;">성찰일기 제출</button>
+    </div>
+    <div class="report-actions" style="margin-top:20px;">
+      <button class="btn btn-ghost" onclick="switchScreen('hub-screen')">허브로 돌아가기</button>
+      <button class="btn btn-primary" onclick="saveAndDownloadResult()">결과 파일 다운로드</button>
+      <button class="btn btn-ghost" onclick="downloadCertificateImage()">수료증 이미지 저장</button>
+    </div>
+  `;
+}
+function submitJournal(){
+  collectJournalFromDOM();
+  state.journalSubmittedAt = new Date().toISOString();
+  saveResultRecord();
+  alert('성찰일기가 저장되었습니다!');
+}
+</script>
+</body>
+</html>
